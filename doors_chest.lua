@@ -166,7 +166,6 @@ function register_door(name, def)
 			type = "fixed",
 			fixed = def.selection_box_bottom
 		},
-		use_texture_alpha = def.use_texture_alpha,
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -207,7 +206,6 @@ function register_door(name, def)
 			type = "fixed",
 			fixed = def.selection_box_top
 		},
-		use_texture_alpha = def.use_texture_alpha,
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -248,7 +246,6 @@ function register_door(name, def)
 			type = "fixed",
 			fixed = def.selection_box_bottom
 		},
-		use_texture_alpha = def.use_texture_alpha,
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -289,7 +286,6 @@ function register_door(name, def)
 			type = "fixed",
 			fixed = def.selection_box_top
 		},
-		use_texture_alpha = def.use_texture_alpha,
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -322,7 +318,6 @@ local name = "protector:door_wood"
 register_door(name, {
 	description = S("Protected Wooden Door"),
 	inventory_image = "doors_wood.png^protector_logo.png",
-	use_texture_alpha = "clip",
 	groups = {
 		snappy = 1, choppy = 2, dig_immediate = 2,
 		unbreakable = 1, axey = 1, --door = 1
@@ -367,7 +362,6 @@ local name = "protector:door_steel"
 register_door(name, {
 	description = S("Protected Steel Door"),
 	inventory_image = "doors_steel.png^protector_logo.png",
-	use_texture_alpha = "clip",
 	groups = {
 		snappy = 1, bendy = 2, cracky = 1,
 		level = mcl and 0 or 2, pickaxey = 2, unbreakable = 1, -- door = 1
