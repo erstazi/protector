@@ -41,7 +41,7 @@ local protector_recipe = minetest.settings:get_bool("protector_recipe") ~= false
 local protector_msg = minetest.settings:get_bool("protector_msg") ~= false
 
 -- radius limiter (minetest cannot handle node volume of more than 4096000)
-if protector_radius > 22 then protector_radius = 22 end
+if protector_radius > 30 then protector_radius = 30 end
 
 
 -- get static spawn position

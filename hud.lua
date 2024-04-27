@@ -3,7 +3,7 @@ local S = protector.intllib
 local radius = (tonumber(minetest.settings:get("protector_radius")) or 5)
 
 -- radius limiter (minetest cannot handle node volume of more than 4096000)
-if radius > 22 then radius = 22 end
+if radius > 30 then radius = 30 end
 
 local hud = {}
 local hud_timer = 0
