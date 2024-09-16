@@ -120,9 +120,9 @@ function register_door(name, def)
 		end
 
 		if minetest.get_meta(pos):get_int("right") ~= 0 then
-			minetest.sound_play(snd_1, {pos = pos, gain = 0.3, max_hear_distance = 10})
+			minetest.sound_play(snd_1, {pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 		else
-			minetest.sound_play(snd_2, {pos = pos, gain = 0.3, max_hear_distance = 10})
+			minetest.sound_play(snd_2, {pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 		end
 	end
 
@@ -417,7 +417,7 @@ function register_trapdoor(name, def)
 		if node.name == name_closed then sound = "doors_door_open" end
 		if node.name == name_opened then sound = "doors_door_close" end
 		if sound then
-			minetest.sound_play(sound, {pos = pos, gain = 0.3, max_hear_distance = 10})
+			minetest.sound_play(sound, {pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 		end
 		minetest.swap_node(pos, {name = newname, param1 = node.param1, param2 = node.param2})
 	end
