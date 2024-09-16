@@ -79,7 +79,7 @@ minetest.register_craftitem("protector:tool", {
 		end
 
 		-- do not place protector out of map bounds
-		if minetest.find_node_near(pos, 1, {"ignore"}) then
+		if minetest.find_node_near(pos, 1, {"ignore", "mcl_core:bedrock"}) then
 			return
 		end
 

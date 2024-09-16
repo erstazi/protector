@@ -16,6 +16,7 @@ local protector_crafts = minetest.settings:get_bool("protector_crafts") ~= false
 -- Registers a door
 function register_door(name, def)
 	def.groups.not_in_creative_inventory = 1
+	def.groups.handy = 1
 
 	local box = {{-0.5, -0.5, -0.5, 0.5, 0.5, -0.5+1.5/16}}
 
@@ -550,6 +551,8 @@ end
 
 -- Protected Chest
 
+local chest_size = mcl and (9 * 3) or (8 * 4)
+
 minetest.register_node("protector:chest", {
 	description = S("Protected Chest"),
 	tiles = {
@@ -570,7 +573,7 @@ minetest.register_node("protector:chest", {
 
 		meta:set_string("infotext", S("Protected Chest"))
 		meta:set_string("name", S("Protected Chest"))
-		inv:set_size("main", 8 * 4)
+		inv:set_size("main", chest_size)
 	end,
 
 	can_dig = function(pos,player)
