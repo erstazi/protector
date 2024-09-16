@@ -19,6 +19,7 @@ local function register_door(name, def)
 
 	def.groups.not_in_creative_inventory = 1
 	def.groups.handy = 1
+	def.groups.prot_door = 1
 
 	local box = {{-0.5, -0.5, -0.5, 0.5, 0.5, -0.5+1.5/16}}
 
@@ -46,9 +47,9 @@ local function register_door(name, def)
 			end
 
 			local pt = pointed_thing.above
-			local pt2 = {x=pt.x, y=pt.y, z=pt.z}
+			local pt2 = {x = pt.x, y = pt.y, z = pt.z}
 
-			pt2.y = pt2.y+1
+			pt2.y = pt2.y + 1
 
 			if not minetest.registered_nodes[minetest.get_node(pt).name].buildable_to
 			or not minetest.registered_nodes[minetest.get_node(pt2).name].buildable_to
@@ -63,24 +64,24 @@ local function register_door(name, def)
 			end
 
 			local p2 = minetest.dir_to_facedir(placer:get_look_dir())
-			local pt3 = {x=pt.x, y=pt.y, z=pt.z}
+			local pt3 = {x = pt.x, y = pt.y, z = pt.z}
 
 			if p2 == 0 then
-				pt3.x = pt3.x-1
+				pt3.x = pt3.x - 1
 			elseif p2 == 1 then
-				pt3.z = pt3.z+1
+				pt3.z = pt3.z + 1
 			elseif p2 == 2 then
-				pt3.x = pt3.x+1
+				pt3.x = pt3.x + 1
 			elseif p2 == 3 then
-				pt3.z = pt3.z-1
+				pt3.z = pt3.z - 1
 			end
 
-			if minetest.get_item_group(minetest.get_node(pt3).name, "door") == 0 then
-				minetest.set_node(pt, {name = name.."_b_1", param2 = p2})
-				minetest.set_node(pt2, {name = name.."_t_1", param2 = p2})
+			if minetest.get_item_group(minetest.get_node(pt3).name, "prot_door") == 0 then
+				minetest.set_node(pt, {name = name .. "_b_1", param2 = p2})
+				minetest.set_node(pt2, {name = name .. "_t_1", param2 = p2})
 			else
-				minetest.set_node(pt, {name = name.."_b_2", param2 = p2})
-				minetest.set_node(pt2, {name = name.."_t_2", param2 = p2})
+				minetest.set_node(pt, {name = name .. "_b_2", param2 = p2})
+				minetest.set_node(pt2, {name = name .. "_t_2", param2 = p2})
 
 				minetest.get_meta(pt):set_int("right", 1)
 				minetest.get_meta(pt2):set_int("right", 1)
