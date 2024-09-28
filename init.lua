@@ -447,15 +447,23 @@ end
 
 local player_pos = {}
 
+-- stone texture
+
+local stone_tex = "default_stone.png"
+
+if minetest.get_modpath("nc_terrain") then
+	stone_tex = "nc_terrain_stone.png"
+end
+
 -- protection node
 
 minetest.register_node("protector:protect", {
 	description = S("Protection Block") .. " (" .. S("USE for area check") .. ")",
 	drawtype = "nodebox",
 	tiles = {
-		"default_stone.png^protector_overlay.png",
-		"default_stone.png^protector_overlay.png",
-		"default_stone.png^protector_overlay.png^protector_logo.png"
+		stone_tex .. "^protector_overlay.png",
+		stone_tex .. "^protector_overlay.png",
+		stone_tex .. "^protector_overlay.png^protector_logo.png"
 	},
 	sounds = default.node_sound_stone_defaults(),
 	groups = {dig_immediate = 2, unbreakable = 1},
