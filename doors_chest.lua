@@ -4,7 +4,7 @@
 local S = minetest.get_translator("protector")
 local F = minetest.formspec_escape
 
--- MineClone2 support
+-- MineClone support
 
 local mcl = minetest.get_modpath("mcl_core")
 local mcf = minetest.get_modpath("mcl_formspec")
@@ -21,7 +21,7 @@ local function register_door(name, def)
 	def.groups.handy = 1
 	def.groups.prot_door = 1
 
-	local box = {{-0.5, -0.5, -0.5, 0.5, 0.5, -0.5+1.5/16}}
+	local box = {{-0.5, -0.5, -0.5, 0.5, 0.5, -0.5 + 1.5/16}}
 
 	def.node_box_bottom = box
 	def.node_box_top = box
@@ -91,6 +91,8 @@ local function register_door(name, def)
 				itemstack:take_item()
 			end
 
+			minetest.sound_play(def.sounds.place, {pos = pt2}, true)
+
 			return itemstack
 		end
 	})
@@ -109,7 +111,7 @@ local function register_door(name, def)
 
 	local function on_rightclick(pos, dir, check_name, replace, replace_dir, params)
 
-		pos.y = pos.y+dir
+		pos.y = pos.y + dir
 
 		if minetest.get_node(pos).name ~= check_name then return end
 
@@ -117,11 +119,11 @@ local function register_door(name, def)
 
 		p2 = params[p2 + 1]
 
-		minetest.swap_node(pos, {name=replace_dir, param2 = p2})
+		minetest.swap_node(pos, {name = replace_dir, param2 = p2})
 
-		pos.y = pos.y-dir
+		pos.y = pos.y - dir
 
-		minetest.swap_node(pos, {name=replace, param2=p2})
+		minetest.swap_node(pos, {name = replace, param2=p2})
 
 		minetest.sound_play("default_dug_node",
 				{pos = pos, gain = 0.3, max_hear_distance = 10}, true)
@@ -161,14 +163,11 @@ local function register_door(name, def)
 		paramtype2 = "facedir",
 		use_texture_alpha = "clip",
 		is_ground_content = false,
+		node_dig_prediction = "",
 		drop = name,
 		drawtype = "nodebox",
-		node_box = {
-			type = "fixed", fixed = def.node_box_bottom
-		},
-		selection_box = {
-			type = "fixed", fixed = def.selection_box_bottom
-		},
+		node_box = { type = "fixed", fixed = def.node_box_bottom },
+		selection_box = { type = "fixed", fixed = def.selection_box_bottom },
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -191,7 +190,7 @@ local function register_door(name, def)
 
 		sounds = def.sounds,
 		sunlight_propagates = def.sunlight,
-		on_blast = function() end,
+		on_blast = function() end
 	})
 
 	minetest.register_node(name .. "_t_1", {
@@ -200,20 +199,17 @@ local function register_door(name, def)
 		paramtype2 = "facedir",
 		use_texture_alpha = "clip",
 		is_ground_content = false,
+		node_dig_prediction = "",
 		drop = "",
 		drawtype = "nodebox",
-		node_box = {
-			type = "fixed", fixed = def.node_box_top
-		},
-		selection_box = {
-			type = "fixed", fixed = def.selection_box_top
-		},
+		node_box = { type = "fixed", fixed = def.node_box_top },
+		selection_box = { type = "fixed", fixed = def.selection_box_top },
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
 
 		after_dig_node = function(pos, oldnode, oldmetadata, digger)
-			pos.y = pos.y-1
+			pos.y = pos.y - 1
 			after_dig_node(pos, name .. "_b_1", digger)
 		end,
 
@@ -229,23 +225,20 @@ local function register_door(name, def)
 
 		sounds = def.sounds,
 		sunlight_propagates = def.sunlight,
-		on_blast = function() end,
+		on_blast = function() end
 	})
 
-	minetest.register_node(name.."_b_2", {
+	minetest.register_node(name .. "_b_2", {
 		tiles = {tb[2], tb[2], tb[2], tb[2], tb[1] .. "^[transformfx", tb[1]},
 		paramtype = "light",
 		paramtype2 = "facedir",
 		use_texture_alpha = "clip",
 		is_ground_content = false,
+		node_dig_prediction = "",
 		drop = name,
 		drawtype = "nodebox",
-		node_box = {
-			type = "fixed", fixed = def.node_box_bottom
-		},
-		selection_box = {
-			type = "fixed", fixed = def.selection_box_bottom
-		},
+		node_box = { type = "fixed", fixed = def.node_box_bottom },
+		selection_box = { type = "fixed", fixed = def.selection_box_bottom },
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -267,7 +260,7 @@ local function register_door(name, def)
 
 		sounds = def.sounds,
 		sunlight_propagates = def.sunlight,
-		on_blast = function() end,
+		on_blast = function() end
 	})
 
 	minetest.register_node(name .. "_t_2", {
@@ -276,14 +269,11 @@ local function register_door(name, def)
 		paramtype2 = "facedir",
 		use_texture_alpha = "clip",
 		is_ground_content = false,
+		node_dig_prediction = "",
 		drop = "",
 		drawtype = "nodebox",
-		node_box = {
-			type = "fixed", fixed = def.node_box_top
-		},
-		selection_box = {
-			type = "fixed", fixed = def.selection_box_top
-		},
+		node_box = { type = "fixed", fixed = def.node_box_top },
+		selection_box = { type = "fixed", fixed = def.selection_box_top },
 		groups = def.groups,
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -305,7 +295,7 @@ local function register_door(name, def)
 
 		sounds = def.sounds,
 		sunlight_propagates = def.sunlight,
-		on_blast = function() end,
+		on_blast = function() end
 	})
 end
 
@@ -329,9 +319,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = name,
-			recipe = {
-				{"mcl_doors:wooden_door", "mcl_core:gold_ingot"}
-			}
+			recipe = { {"mcl_doors:wooden_door", "mcl_core:gold_ingot"} }
 		})
 	else
 		minetest.register_craft({
@@ -345,9 +333,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = name,
-			recipe = {
-				{"doors:door_wood", "default:copper_ingot"}
-			}
+			recipe = { {"doors:door_wood", "default:copper_ingot"} }
 		})
 	end
 end
@@ -375,9 +361,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = name,
-			recipe = {
-				{"mcl_doors:iron_door", "mcl_core:gold_ingot"}
-			}
+			recipe = { {"mcl_doors:iron_door", "mcl_core:gold_ingot"} }
 		})
 	else
 		minetest.register_craft({
@@ -391,9 +375,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = name,
-			recipe = {
-				{"doors:door_steel", "default:copper_ingot"}
-			}
+			recipe = { {"doors:door_steel", "default:copper_ingot"} }
 		})
 	end
 end
@@ -414,7 +396,8 @@ local function register_trapdoor(name, def)
 		minetest.sound_play("default_dug_node",
 				{pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 
-		minetest.swap_node(pos, {name = newname, param1 = node.param1, param2 = node.param2})
+		minetest.swap_node(pos,
+				{name = newname, param1 = node.param1, param2 = node.param2})
 	end
 
 	-- Common trapdoor configuration
@@ -423,6 +406,7 @@ local function register_trapdoor(name, def)
 	def.paramtype2 = "facedir"
 	def.use_texture_alpha = "clip"
 	def.is_ground_content = false
+	def.node_dig_prediction = ""
 
 	local def_opened = table.copy(def)
 	local def_closed = table.copy(def)
@@ -474,9 +458,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = "protector:trapdoor",
-			recipe = {
-				{"mcl_doors:trapdoor", "mcl_core:gold_ingot"}
-			}
+			recipe = { {"mcl_doors:trapdoor", "mcl_core:gold_ingot"} }
 		})
 	else
 		minetest.register_craft({
@@ -489,9 +471,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = "protector:trapdoor",
-			recipe = {
-				{"doors:trapdoor", "default:copper_ingot"}
-			}
+			recipe = { {"doors:trapdoor", "default:copper_ingot"} }
 		})
 	end
 end
@@ -510,17 +490,16 @@ register_trapdoor("protector:trapdoor_steel", {
 	},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
-	sounds = default.node_sound_metal_defaults(),
+	sounds = default.node_sound_metal_defaults()
 })
 
 if protector_crafts then
 
 	if mcl then
+
 		minetest.register_craft({
 			output = "protector:trapdoor_steel",
-			recipe = {
-				{"mcl_doors:iron_trapdoor", "mcl_core:gold_ingot"}
-			}
+			recipe = { {"mcl_doors:iron_trapdoor", "mcl_core:gold_ingot"} }
 		})
 	else
 		minetest.register_craft({
@@ -533,9 +512,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = "protector:trapdoor_steel",
-			recipe = {
-				{"doors:trapdoor_steel", "default:copper_ingot"}
-			}
+			recipe = { {"doors:trapdoor_steel", "default:copper_ingot"} }
 		})
 	end
 end
@@ -582,21 +559,21 @@ minetest.register_node("protector:chest", {
 
 	on_metadata_inventory_put = function(pos, listname, index, stack, player)
 
-		minetest.log("action", player:get_player_name() ..
-			" moves stuff to protected chest at " .. minetest.pos_to_string(pos))
+		minetest.log("action", player:get_player_name()
+			.. " moves stuff to protected chest at " .. minetest.pos_to_string(pos))
 	end,
 
 	on_metadata_inventory_take = function(pos, listname, index, stack, player)
 
-		minetest.log("action", player:get_player_name() ..
-			" takes stuff from protected chest at " .. minetest.pos_to_string(pos))
+		minetest.log("action", player:get_player_name()
+			.. " takes stuff from protected chest at " .. minetest.pos_to_string(pos))
 	end,
 
 	on_metadata_inventory_move = function(
 			pos, from_list, from_index, to_list, to_index, count, player)
 
-		minetest.log("action", player:get_player_name() ..
-			" moves stuff inside protected chest at " .. minetest.pos_to_string(pos))
+		minetest.log("action", player:get_player_name()
+			.. " moves stuff inside protected chest at " .. minetest.pos_to_string(pos))
 	end,
 
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
@@ -629,9 +606,7 @@ minetest.register_node("protector:chest", {
 
 	on_rightclick = function(pos, node, clicker)
 
-		if minetest.is_protected(pos, clicker:get_player_name()) then
-			return
-		end
+		if minetest.is_protected(pos, clicker:get_player_name()) then return end
 
 		local meta = minetest.get_meta(pos) ; if not meta then return end
 
@@ -681,7 +656,7 @@ minetest.register_node("protector:chest", {
 				"protector:chest_" .. minetest.pos_to_string(pos), formspec)
 	end,
 
-	on_blast = function() end,
+	on_blast = function() end
 })
 
 -- Container transfer helper
@@ -762,9 +737,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = "protector:chest",
-			recipe = {
-				{"mcl_chests:chest", "mcl_core:gold_ingot"}
-			}
+			recipe = { {"mcl_chests:chest", "mcl_core:gold_ingot"} }
 		})
 	else
 		minetest.register_craft({
@@ -778,9 +751,7 @@ if protector_crafts then
 
 		minetest.register_craft({
 			output = "protector:chest",
-			recipe = {
-				{"default:chest", "default:copper_ingot"}
-			}
+			recipe = { {"default:chest", "default:copper_ingot"} }
 		})
 	end
 end
