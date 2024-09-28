@@ -4,8 +4,9 @@
 if not minetest.global_exists("default") then
 
 	default = {
-		node_sound_stone_defaults = function(table) end,
-		node_sound_wood_defaults = function(table) end,
+		node_sound_stone_defaults = function(table) return {} end,
+		node_sound_wood_defaults = function(table) return {} end,
+		node_sound_metal_defaults = function(table) return {} end,
 		gui_bg = "", gui_bg_img = "", gui_slots = ""
 	}
 end
