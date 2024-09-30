@@ -81,8 +81,8 @@ minetest.register_craftitem("protector:tool", {
 			return
 		end
 
-		-- do not place protector out of map bounds
-		if minetest.find_node_near(pos, 1, {"ignore", "mcl_core:bedrock"}) then
+		-- do not place protector out of map bounds or replace bedrock
+		if #minetest.find_nodes_in_area(pos, pos, {"ignore", "mcl_core:bedrock"}) > 0 then
 
 			minetest.chat_send_player(name, S("Out of bounds!"))
 
