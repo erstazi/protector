@@ -754,7 +754,8 @@ minetest.register_node("protector:display_node", {
 
 -- load mod sections
 
-dofile(MP .. "/doors_chest.lua")
+dofile(MP .. "/doors.lua")
+dofile(MP .. "/chest.lua")
 dofile(MP .. "/pvp.lua")
 dofile(MP .. "/admin.lua")
 dofile(MP .. "/tool.lua")

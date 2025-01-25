@@ -61,11 +61,9 @@ and minetest.settings:get_bool("protector_pvp") then
 			end
 
 			return false
-
 		end)
 	else
 		print("[MOD] Protector - pvp_protect not active, update your version of Minetest")
-
 	end
 else
 	print("[MOD] Protector - pvp_protect is disabled")
