@@ -2,11 +2,7 @@
 -- translation and protector radius
 
 local S = minetest.get_translator("protector")
-local radius = (tonumber(minetest.settings:get("protector_radius")) or 5)
-
--- radius limiter (minetest cannot handle node volume of more than 4096000)
-
-if radius > 30 then radius = 30 end
+local radius = protector.radius
 
 -- hud settings
 
@@ -19,9 +15,10 @@ if hud_interval > 0 then
 
 minetest.register_globalstep(function(dtime)
 
-	-- every 5 seconds
 	hud_timer = hud_timer + dtime
+
 	if hud_timer < hud_interval then return end
+
 	hud_timer = 0
 
 	for _, player in pairs(minetest.get_connected_players()) do

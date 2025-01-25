@@ -106,13 +106,9 @@ minetest.register_abm({
 	end
 })
 
--- get protection radius (max 30)
-
-local r = tonumber(minetest.settings:get("protector_radius")) or 5
-
-if r > 30 then r = 30 end
-
 -- show protection areas of nearby protectors owned by you (thanks agaran)
+
+local r = protector.radius
 
 minetest.register_chatcommand("protector_show_area", {
 	params = "",

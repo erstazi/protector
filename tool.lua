@@ -5,11 +5,7 @@ local S = minetest.get_translator("protector")
 
 -- get protection radius
 
-local r = tonumber(minetest.settings:get("protector_radius")) or 5
-
--- radius limiter (minetest cannot handle node volume of more than 4096000)
-
-if r > 30 then r = 30 end
+local r = protector.radius
 
 -- protector placement tool
 
@@ -43,18 +39,12 @@ minetest.register_craftitem("protector:tool", {
 		local pit =  user:get_look_vertical()
 
 		-- set placement coords
-		if pit > 1.2 then
-			vec.y = -gap -- up
-		elseif pit < -1.2 then
-			vec.y = gap -- down
-		elseif dir == 0 then
-			vec.z = gap -- north
-		elseif dir == 1 then
-			vec.x = gap -- east
-		elseif dir == 2 then
-			vec.z = -gap -- south
-		elseif dir == 3 then
-			vec.x = -gap -- west
+		if pit > 1.2 then      vec.y = -gap -- up
+		elseif pit < -1.2 then vec.y = gap -- down
+		elseif dir == 0 then   vec.z = gap -- north
+		elseif dir == 1 then   vec.x = gap -- east
+		elseif dir == 2 then   vec.z = -gap -- south
+		elseif dir == 3 then   vec.x = -gap -- west
 		end
 
 		-- new position
@@ -151,8 +141,7 @@ minetest.register_craftitem("protector:tool", {
 		end
 
 		minetest.chat_send_player(name,
-				S("Protector placed at") ..
-				" " ..  minetest.pos_to_string(pos))
+				S("Protector placed at") .. " " ..  minetest.pos_to_string(pos))
 	end
 })
 

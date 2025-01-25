@@ -25,7 +25,21 @@ local S = minetest.get_translator("protector")
 
 -- global table
 
-protector = {mod = "redo"}
+protector = {
+	mod = "redo",
+	max_shares = 12,
+	radius = tonumber(minetest.settings:get("protector_radius")) or 5
+}
+
+-- radius limiter (minetest cannot handle node volume of more than 4096000)
+
+if protector.radius > 30 then protector.radius = 30 end
+
+-- playerfactions check
+
+local factions_available = minetest.global_exists("factions")
+
+if factions_available then protector.max_shares = 8 end
 
 -- localize math
 
@@ -33,9 +47,6 @@ local math_floor, math_pi = math.floor, math.pi
 
 -- settings
 
-local factions_available = minetest.global_exists("factions")
-local protector_max_share_count = 12
-local protector_radius = tonumber(minetest.settings:get("protector_radius")) or 5
 local protector_flip = minetest.settings:get_bool("protector_flip") or false
 local protector_hurt = tonumber(minetest.settings:get("protector_hurt")) or 0
 local protector_spawn = tonumber(minetest.settings:get("protector_spawn")
@@ -43,10 +54,6 @@ local protector_spawn = tonumber(minetest.settings:get("protector_spawn")
 local protector_show = tonumber(minetest.settings:get("protector_show_interval")) or 5
 local protector_recipe = minetest.settings:get_bool("protector_recipe") ~= false
 local protector_msg = minetest.settings:get_bool("protector_msg") ~= false
-
--- radius limiter (minetest cannot handle node volume of more than 4096000)
-
-if protector_radius > 30 then protector_radius = 30 end
 
 -- get static spawn position
 
@@ -126,7 +133,7 @@ local function add_member(meta, name)
 
 	local list = get_member_list(meta)
 
-	if #list >= protector_max_share_count then return end
+	if #list >= protector.max_shares then return end
 
 	table.insert(list, name)
 
@@ -163,7 +170,6 @@ local function protector_formspec(meta)
 		.. "field_close_on_enter[protector_add_member;false]"
 
 	local members = get_member_list(meta)
-	local npp = protector_max_share_count -- max users added to protector list
 	local i = 0
 	local checkbox_faction = false
 
@@ -192,13 +198,11 @@ local function protector_formspec(meta)
 			.. F(S("Allow faction access"))
 			.. ";" .. (meta:get_int("faction_members") == 1 and
 					"true" or "false") .. "]"
-
-		if npp > 8 then npp = 8 end
 	end
 
 	for n = 1, #members do
 
-		if i < npp then
+		if i < protector.max_shares then
 
 			-- show username
 			formspec = formspec .. "button[" .. (i % 4 * 2)
@@ -214,7 +218,7 @@ local function protector_formspec(meta)
 		i = i + 1
 	end
 
-	if i < npp then
+	if i < protector.max_shares then
 
 		-- user name entry field
 		formspec = formspec .. "field[" .. (i % 4 * 2 + 1 / 3) .. ","
@@ -392,7 +396,7 @@ function minetest.is_protected(pos, digger)
 	digger = digger or "" -- nil check
 
 	-- is area protected against digger?
-	if not protector.can_dig(protector_radius, pos, digger, false, 1) then
+	if not protector.can_dig(protector.radius, pos, digger, false, 1) then
 		return true
 	end
 
@@ -410,7 +414,7 @@ local function check_overlap(itemstack, placer, pointed_thing)
 	local name = placer:get_player_name()
 
 	-- make sure protector doesn't overlap onto protected spawn area
-	if inside_spawn(pos, protector_spawn + protector_radius) then
+	if inside_spawn(pos, protector_spawn + protector.radius) then
 
 		minetest.chat_send_player(name,
 				S("Spawn @1 has been protected up to a @2 block radius.",
@@ -420,7 +424,7 @@ local function check_overlap(itemstack, placer, pointed_thing)
 	end
 
 	-- make sure protector doesn't overlap any other player's area
-	if not protector.can_dig(protector_radius * 2, pos, name, true, 3) then
+	if not protector.can_dig(protector.radius * 2, pos, name, true, 3) then
 
 		minetest.chat_send_player(name,
 				S("Overlaps into above players protected area"))
@@ -493,7 +497,7 @@ minetest.register_node("protector:protect", {
 
 		if pointed_thing.type ~= "node" then return end
 
-		protector.can_dig(protector_radius, pointed_thing.under,
+		protector.can_dig(protector.radius, pointed_thing.under,
 				user:get_player_name(), false, 2)
 	end,
 
@@ -591,7 +595,7 @@ minetest.register_node("protector:protect2", {
 
 		if pointed_thing.type ~= "node" then return end
 
-		protector.can_dig(protector_radius, pointed_thing.under,
+		protector.can_dig(protector.radius, pointed_thing.under,
 				user:get_player_name(), false, 2)
 	end,
 
@@ -726,7 +730,7 @@ minetest.register_entity("protector:display", {
 -- Display-zone node, Do NOT place the display as a node,
 -- it is made to be used as an entity (see above)
 
-local x = protector_radius
+local x = protector.radius
 
 minetest.register_node("protector:display_node", {
 	tiles = {"protector_display.png"},
