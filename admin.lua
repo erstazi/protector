@@ -14,24 +14,19 @@ minetest.register_chatcommand("protector_remove", {
 
 	func = function(name, param)
 
-		if not param or param == "" then
-
-			minetest.chat_send_player(name,
-					S("Protector Names to remove: @1", removal_names))
-
-			return
-		end
-
 		if param == "-" then
 
 			minetest.chat_send_player(name, S("Name List Reset"))
 
-			removal_names = ""
-
-			return
+			removal_names = "" ; return
 		end
 
-		removal_names = param
+		if param ~= "" then
+			removal_names = param
+		end
+
+		minetest.chat_send_player(name,
+				S("Protector Names to remove: @1", removal_names))
 	end
 })
 
@@ -49,23 +44,33 @@ minetest.register_chatcommand("protector_replace", {
 
 			minetest.chat_send_player(name, S("Name List Reset"))
 
-			replace_names = ""
+			replace_names = "" ; return
+		end
 
-			return
+		-- check and set replacement name
+		if param ~= "" then
+
+			local names = param:split(" ") ; if not names[2] then return end
+
+			if names[2] ~= string.match(names[2], "[%w_-]+") then
+				minetest.chat_send_player(name, S("Invalid player name!")) ; return
+			end
+
+			if names[2]:len() > 25 then
+				minetest.chat_send_player(name, S("Player name too long")) ; return
+			end
+
+			replace_names = param
 		end
 
 		-- show name info
-		if param == "" and replace_names ~= "" then
+		if replace_names ~= "" then
 
 			local names = replace_names:split(" ")
 
 			minetest.chat_send_player(name, S("Replacing Protector name @1 with @2",
 					names[1] or "", names[2] or ""))
-
-			return
 		end
-
-		replace_names = param
 	end
 })
 
@@ -82,7 +87,6 @@ minetest.register_abm({
 		if removal_names == "" and replace_names == "" then return end
 
 		local meta = minetest.get_meta(pos) ; if not meta then return end
-
 		local owner = meta:get_string("owner")
 
 		if removal_names ~= "" then
@@ -90,7 +94,10 @@ minetest.register_abm({
 			local names = removal_names:split(" ")
 
 			for _, n in pairs(names) do
-				if n == owner then minetest.set_node(pos, {name = "air"}) end
+
+				if n == owner then
+					minetest.set_node(pos, {name = "air"}) ; return
+				end
 			end
 		end
 
@@ -99,6 +106,7 @@ minetest.register_abm({
 			local names = replace_names:split(" ")
 
 			if names[1] and names[2] and owner == names[1] then
+
 				meta:set_string("owner", names[2])
 				meta:set_string("infotext", S("Protection (owned by @1)", names[2]))
 			end
