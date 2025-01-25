@@ -25,7 +25,11 @@ local S = minetest.get_translator("protector")
 
 -- global table
 
-protector = { mod = "redo", modpath = MP }
+protector = {mod = "redo"}
+
+-- localize math
+
+local math_floor, math_pi = math.floor, math.pi
 
 -- settings
 
@@ -140,8 +144,7 @@ local function del_member(meta, name)
 	for i, n in pairs(list) do
 
 		if n == name then
-			table.remove(list, i)
-			break
+			table.remove(list, i) ; break
 		end
 	end
 
@@ -178,11 +181,13 @@ local function protector_formspec(meta)
 		else
 			local player_factions = factions.get_player_factions(meta:get_string("owner"))
 
-			if player_factions ~= nil and #player_factions >= 1 then
+			if player_factions ~= nil and type(player_factions) == "table"
+			and #player_factions >= 1 then
 				checkbox_faction = true
 			end
 		end
 	end
+
 	if checkbox_faction then
 
 		formspec = formspec .. "checkbox[0,5;faction_members;"
@@ -199,12 +204,12 @@ local function protector_formspec(meta)
 
 			-- show username
 			formspec = formspec .. "button[" .. (i % 4 * 2)
-			.. "," .. math.floor(i / 4 + 3)
+			.. "," .. math_floor(i / 4 + 3)
 			.. ";1.5,.5;protector_member;" .. F(members[n]) .. "]"
 
 			-- username remove button
 			.. "button[" .. (i % 4 * 2 + 1.25) .. ","
-			.. math.floor(i / 4 + 3)
+			.. math_floor(i / 4 + 3)
 			.. ";.75,.5;protector_del_member_" .. F(members[n]) .. ";X]"
 		end
 
@@ -215,12 +220,12 @@ local function protector_formspec(meta)
 
 		-- user name entry field
 		formspec = formspec .. "field[" .. (i % 4 * 2 + 1 / 3) .. ","
-		.. (math.floor(i / 4 + 3) + 1 / 3)
+		.. (math_floor(i / 4 + 3) + 1 / 3)
 		.. ";1.433,.5;protector_add_member;;]"
 
 		-- username add button
 		.."button[" .. (i % 4 * 2 + 1.25) .. ","
-		.. math.floor(i / 4 + 3) .. ";.75,.5;protector_submit;+]"
+		.. math_floor(i / 4 + 3) .. ";.75,.5;protector_submit;+]"
 
 	end
 
@@ -243,12 +248,12 @@ end
 
 -- show protection message if enabled
 
-local function show_msg(player, msg)
+local function show_msg(player_name, msg)
 
 	-- if messages disabled or no player name provided
-	if protector_msg == false or not player or player == "" then return end
+	if protector_msg == false or not player_name or player_name == "" then return end
 
-	minetest.chat_send_player(player, msg)
+	minetest.chat_send_player(player_name, msg)
 end
 
 
@@ -358,10 +363,10 @@ minetest.register_on_protection_violation(function(pos, name)
 		if protector_flip then
 
 			-- yaw + 180°
-			local yaw = player:get_look_horizontal() + math.pi
+			local yaw = player:get_look_horizontal() + math_pi
 
-			if yaw > 2 * math.pi then
-				yaw = yaw - 2 * math.pi
+			if yaw > 2 * math_pi then
+				yaw = yaw - 2 * math_pi
 			end
 
 			player:set_look_horizontal(yaw)
@@ -689,8 +694,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		if string.sub(field, 0,
 				string.len("protector_del_member_")) == "protector_del_member_" then
 
-			del_member(meta,
-					string.sub(field,string.len("protector_del_member_") + 1))
+			del_member(meta, string.sub(field,string.len("protector_del_member_") + 1))
 		end
 	end
 
@@ -747,7 +751,8 @@ minetest.register_node("protector:display_node", {
 	selection_box = {type = "regular"},
 	paramtype = "light",
 	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
-	drop = ""
+	drop = "",
+	on_blast = function() end
 })
 
 -- load mod sections
