@@ -97,9 +97,7 @@ local function is_member(meta, name)
 
 				for _, f in ipairs(player_factions) do
 
-					if factions.player_is_in_faction(f, owner) then
-						return true
-					end
+					if factions.player_is_in_faction(f, owner) then return true end
 				end
 			end
 		end
@@ -226,7 +224,6 @@ local function protector_formspec(meta)
 		-- username add button
 		.."button[" .. (i % 4 * 2 + 1.25) .. ","
 		.. math_floor(i / 4 + 3) .. ";.75,.5;protector_submit;+]"
-
 	end
 
 	return formspec

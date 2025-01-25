@@ -73,7 +73,7 @@ minetest.register_chatcommand("protector_replace", {
 
 minetest.register_abm({
 	nodenames = {"protector:protect", "protector:protect2", "protector:protect_hidden"},
-	interval = 6,
+	interval = 5,
 	chance = 1,
 	catch_up = false,
 
@@ -81,9 +81,7 @@ minetest.register_abm({
 
 		if removal_names == "" and replace_names == "" then return end
 
-		local meta = minetest.get_meta(pos)
-
-		if not meta then return end
+		local meta = minetest.get_meta(pos) ; if not meta then return end
 
 		local owner = meta:get_string("owner")
 
@@ -166,7 +164,7 @@ minetest.register_node("protector:protect_hidden", {
 	groups = {not_in_creative_inventory = 1, unbreakable = 1},
 	is_ground_content = false,
 	on_blast = function() end,
-	-- 1px block inside door hinge near node top
+	-- 1px block to stop falling nodes replacing protector
 	collision_box = {
 		type = "fixed", fixed = {-15/32, 13/32, -15/32, -13/32, 1/2, -13/32}
 	}

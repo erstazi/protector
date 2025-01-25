@@ -43,7 +43,8 @@ local function register_door(name, def)
 
 			if minetest.registered_nodes[nu.name]
 			and minetest.registered_nodes[nu.name].on_rightclick then
-				return minetest.registered_nodes[nu.name].on_rightclick(ptu, nu, placer, itemstack)
+				return minetest.registered_nodes[nu.name].on_rightclick(
+						ptu, nu, placer, itemstack)
 			end
 
 			local pt = pointed_thing.above
@@ -66,14 +67,10 @@ local function register_door(name, def)
 			local p2 = minetest.dir_to_facedir(placer:get_look_dir())
 			local pt3 = {x = pt.x, y = pt.y, z = pt.z}
 
-			if p2 == 0 then
-				pt3.x = pt3.x - 1
-			elseif p2 == 1 then
-				pt3.z = pt3.z + 1
-			elseif p2 == 2 then
-				pt3.x = pt3.x + 1
-			elseif p2 == 3 then
-				pt3.z = pt3.z - 1
+			if p2 == 0 then     pt3.x = pt3.x - 1
+			elseif p2 == 1 then pt3.z = pt3.z + 1
+			elseif p2 == 2 then pt3.x = pt3.x + 1
+			elseif p2 == 3 then pt3.z = pt3.z - 1
 			end
 
 			if minetest.get_item_group(minetest.get_node(pt3).name, "prot_door") == 0 then
@@ -346,7 +343,7 @@ register_door(name, {
 	description = S("Protected Steel Door"),
 	inventory_image = "doors_steel.png^protector_logo.png",
 	groups = {
-		snappy = 1, bendy = 2, cracky = 1,
+		snappy = 1, cracky = 1,
 		level = (mcl and 0 or 2), pickaxey = 2, unbreakable = 1
 	},
 	tiles_bottom = {"doors_steel_b.png^protector_logo.png", "doors_grey.png"},
@@ -485,7 +482,7 @@ register_trapdoor("protector:trapdoor_steel", {
 	tile_front = "doors_trapdoor_steel.png^protector_logo.png",
 	tile_side = "doors_trapdoor_steel_side.png",
 	groups = {
-		snappy = 1, bendy = 2, cracky = 1, melty = 2, level = (mcl and 0 or 2),
+		snappy = 1, bendy = 2, cracky = 1, level = (mcl and 0 or 2),
 		unbreakable = 1, pickaxey = 2
 	},
 	_mcl_hardness = 1,
