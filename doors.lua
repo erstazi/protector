@@ -32,9 +32,7 @@ local function register_door(name, def)
 
 		on_place = function(itemstack, placer, pointed_thing)
 
-			if pointed_thing.type ~= "node" then
-				return itemstack
-			end
+			if pointed_thing.type ~= "node" then return itemstack end
 
 			local ptu = pointed_thing.under
 			local nu = minetest.get_node(ptu)
@@ -120,7 +118,7 @@ local function register_door(name, def)
 
 		minetest.swap_node(pos, {name = replace, param2=p2})
 
-		minetest.sound_play("default_dug_node",
+		minetest.sound_play(def.open_sound,
 				{pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 	end
 
@@ -175,7 +173,8 @@ local function register_door(name, def)
 		on_rightclick = function(pos, node, clicker)
 
 			if not minetest.is_protected(pos, clicker:get_player_name()) then
-				on_rightclick(pos, 1, name .. "_t_1", name .. "_b_2", name .. "_t_2", {1,2,3,0})
+				on_rightclick(pos, 1, name .. "_t_1", name .. "_b_2",
+						name .. "_t_2", {1,2,3,0})
 			end
 		end,
 
@@ -210,7 +209,8 @@ local function register_door(name, def)
 
 		on_rightclick = function(pos, node, clicker)
 			if not minetest.is_protected(pos, clicker:get_player_name()) then
-				on_rightclick(pos, -1, name .. "_b_1", name .. "_t_2", name .. "_b_2", {1,2,3,0})
+				on_rightclick(pos, -1, name .. "_b_1", name .. "_t_2",
+						name .. "_b_2", {1,2,3,0})
 			end
 		end,
 
@@ -245,7 +245,8 @@ local function register_door(name, def)
 
 		on_rightclick = function(pos, node, clicker)
 			if not minetest.is_protected(pos, clicker:get_player_name()) then
-				on_rightclick(pos, 1, name .. "_t_2", name .. "_b_1", name .. "_t_1", {3,0,1,2})
+				on_rightclick(pos, 1, name .. "_t_2", name .. "_b_1",
+						name .. "_t_1", {3,0,1,2})
 			end
 		end,
 
@@ -280,7 +281,8 @@ local function register_door(name, def)
 
 		on_rightclick = function(pos, node, clicker)
 			if not minetest.is_protected(pos, clicker:get_player_name()) then
-				on_rightclick(pos, -1, name .. "_b_2", name .. "_t_1", name .. "_b_1", {3,0,1,2})
+				on_rightclick(pos, -1, name .. "_b_2", name .. "_t_1",
+						name .. "_b_1", {3,0,1,2})
 			end
 		end,
 
@@ -305,6 +307,7 @@ register_door(name, {
 	tiles_bottom = {"doors_wood_b.png^protector_logo.png", "doors_brown.png"},
 	tiles_top = {"doors_wood_a.png", "doors_brown.png"},
 	sounds = default.node_sound_wood_defaults(),
+	open_sound = "default_dug_node",
 	sunlight = false
 })
 
@@ -347,6 +350,7 @@ register_door(name, {
 	tiles_bottom = {"doors_steel_b.png^protector_logo.png", "doors_grey.png"},
 	tiles_top = {"doors_steel_a.png", "doors_grey.png"},
 	sounds = default.node_sound_metal_defaults(),
+	open_sound = "default_place_node_metal",
 	sunlight = false,
 })
 
@@ -388,7 +392,7 @@ local function register_trapdoor(name, def)
 
 		local newname = node.name == name_closed and name_opened or name_closed
 
-		minetest.sound_play("default_dug_node",
+		minetest.sound_play(def.open_sound,
 				{pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 
 		minetest.swap_node(pos,
@@ -445,6 +449,7 @@ register_trapdoor("protector:trapdoor", {
 	_mcl_hardness = 0.8,
 	_mcl_blast_resistance = 1,
 	sounds = default.node_sound_wood_defaults(),
+	open_sound = "default_dug_node"
 })
 
 if protector_crafts then
@@ -485,7 +490,8 @@ register_trapdoor("protector:trapdoor_steel", {
 	},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
-	sounds = default.node_sound_metal_defaults()
+	sounds = default.node_sound_metal_defaults(),
+	open_sound = "default_place_node_metal"
 })
 
 if protector_crafts then
