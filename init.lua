@@ -257,7 +257,6 @@ local function show_msg(player_name, msg)
 	minetest.chat_send_player(player_name, msg)
 end
 
-
 -- Infolevel:
 -- 0 for no info
 -- 1 for "This area is owned by <owner> !" if you can't dig
@@ -461,25 +460,24 @@ if minetest.get_modpath("nc_terrain") then
 	stone_tex = "nc_terrain_stone.png"
 end
 
--- protection node
+-- protector default
 
-minetest.register_node("protector:protect", {
+local def = {
+
 	description = S("Protection Block") .. " (" .. S("USE for area check") .. ")",
-	drawtype = "nodebox",
 	tiles = {
 		stone_tex .. "^protector_overlay.png",
 		stone_tex .. "^protector_overlay.png",
 		stone_tex .. "^protector_overlay.png^protector_logo.png"
 	},
+	drawtype = "nodebox",
+	node_box = {type = "fixed", fixed = {{-0.499 ,-0.499, -0.499, 0.499, 0.499, 0.499}}},
 	sounds = default.node_sound_stone_defaults(),
 	groups = {dig_immediate = 2, unbreakable = 1},
 	is_ground_content = false,
 	paramtype = "light",
 	light_source = 4,
-
-	node_box = {
-		type = "fixed", fixed = {{-0.499 ,-0.499, -0.499, 0.499, 0.499, 0.499}}
-	},
+	walkable = true,
 
 	on_place = check_overlap,
 
@@ -529,7 +527,11 @@ minetest.register_node("protector:protect", {
 	on_blast = function() end,
 
 	after_destruct = del_display
-})
+}
+
+-- protection node
+
+minetest.register_node("protector:protect", table.copy(def))
 
 -- default recipe and alternative for MineClone2
 
@@ -555,90 +557,32 @@ end
 
 -- protection logo
 
-minetest.register_node("protector:protect2", {
-	description = S("Protection Logo") .. " (" .. S("USE for area check") .. ")",
-	tiles = {"protector_logo.png"},
-	wield_image = "protector_logo.png",
-	inventory_image = "protector_logo.png",
-	sounds = default.node_sound_stone_defaults(),
-	groups = {dig_immediate = 2, unbreakable = 1},
-	is_ground_content = false,
-	use_texture_alpha = "clip",
-	paramtype = "light",
-	paramtype2 = "wallmounted",
-	legacy_wallmounted = true,
-	light_source = 4,
-	drawtype = "nodebox",
-	sunlight_propagates = true,
-	walkable = true,
-	node_box = {
-		type = "wallmounted",
-		wall_top    = {-0.375, 0.4375, -0.5, 0.375, 0.5, 0.5},
-		wall_bottom = {-0.375, -0.5, -0.5, 0.375, -0.4375, 0.5},
-		wall_side   = {-0.5, -0.5, -0.375, -0.4375, 0.5, 0.375}
-	},
-	selection_box = {type = "wallmounted"},
+def.description = S("Protection Logo") .. " (" .. S("USE for area check") .. ")"
+def.tiles = {"protector_logo.png"}
+def.wield_image = "protector_logo.png"
+def.inventory_image = "protector_logo.png"
+def.use_texture_alpha = "clip"
+def.paramtype2 = "wallmounted"
+def.legacy_wallmounted = true
+def.sunlight_propagates = true
+def.node_box = {
+	type = "wallmounted",
+	wall_top = {-0.375, 0.4375, -0.5, 0.375, 0.5, 0.5},
+	wall_bottom = {-0.375, -0.5, -0.5, 0.375, -0.4375, 0.5},
+	wall_side = {-0.5, -0.5, -0.375, -0.4375, 0.5, 0.375}
+}
+def.selection_box = {type = "wallmounted"}
 
-	on_place = check_overlap,
-
-	after_place_node = function(pos, placer)
-
-		local meta = minetest.get_meta(pos)
-
-		meta:set_string("owner", placer:get_player_name() or "")
-		meta:set_string("members", "")
-		meta:set_string("infotext",
-				S("Protection (owned by @1)", meta:get_string("owner")))
-	end,
-
-	on_use = function(itemstack, user, pointed_thing)
-
-		if pointed_thing.type ~= "node" then return end
-
-		protector.can_dig(protector.radius, pointed_thing.under,
-				user:get_player_name(), false, 2)
-	end,
-
-	on_rightclick = function(pos, node, clicker, itemstack)
-
-		local meta = minetest.get_meta(pos)
-		local name = clicker:get_player_name()
-
-		if meta and protector.can_dig(1, pos, name, true, 1) then
-
-			player_pos[name] = pos
-
-			minetest.show_formspec(name, "protector:node", protector_formspec(meta))
-		end
-	end,
-
-	on_punch = function(pos, node, puncher)
-
-		if minetest.is_protected(pos, puncher:get_player_name()) then return end
-
-		minetest.add_entity(pos, "protector:display")
-	end,
-
-	can_dig = function(pos, player)
-
-		return player and protector.can_dig(1, pos, player:get_player_name(), true, 1)
-	end,
-
-	on_blast = function() end,
-
-	after_destruct = del_display
-})
+minetest.register_node("protector:protect2", table.copy(def))
 
 -- recipes to switch between protectors
 
 minetest.register_craft({
-	output = "protector:protect",
-	recipe = {{"protector:protect2"}}
+	output = "protector:protect", recipe = {{"protector:protect2"}}
 })
 
 minetest.register_craft({
-	output = "protector:protect2",
-	recipe = {{"protector:protect"}}
+	output = "protector:protect2", recipe = {{"protector:protect"}}
 })
 
 -- check formspec buttons or when name entered
