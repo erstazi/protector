@@ -42,7 +42,7 @@ This area is owned by @1=Quest'area è di proprietà di @1
 
 ### pvp.lua ###
 [Protector] on_punchplayer called with nil objects=[Protector] on_punchplayer chiamato con oggetti nil
-[Protector] pvp_protect not active, update your version of Minetest=[Protector] pvp_protect non attiva, aggiorna la tua versione di Minetest
+[Protector] pvp_protect not active, update your version of Luanti=[Protector] pvp_protect non attiva, aggiorna la tua versione di Luanti
 [Protector] pvp_protect is disabled=[Protector] pvp_protect è disattivato
 
 ### hud.lua ###
