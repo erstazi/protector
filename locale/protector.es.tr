@@ -53,3 +53,5 @@ Protector already in place!=¡El protector ya está en este lugar!
 No protectors available to place!=¡No hay protectores disponibles para colocar!
 Protector placed at @1=Protector colocado en @1
 Out of bounds!=
+Cannot place protector, already protected at @1=
+Cannot place protector, container at @1=
