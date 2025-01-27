@@ -51,3 +51,5 @@ Protector already in place!=
 Out of bounds!=
 No protectors available to place!=
 Protector placed at @1=
+Cannot place protector, already protected at @1=
+Cannot place protector, container at @1=
