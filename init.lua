@@ -674,7 +674,7 @@ minetest.register_entity("protector:display", {
 -- Display-zone node, Do NOT place the display as a node,
 -- it is made to be used as an entity (see above)
 
-local x = protector.radius
+local r = protector.radius
 
 minetest.register_node("protector:display_node", {
 	tiles = {"protector_display.png"},
@@ -684,12 +684,12 @@ minetest.register_node("protector:display_node", {
 	node_box = {
 		type = "fixed",
 		fixed = {
-			{-(x+.55), -(x+.55), -(x+.55), -(x+.45), (x+.55), (x+.55)}, -- sides
-			{-(x+.55), -(x+.55), (x+.45), (x+.55), (x+.55), (x+.55)},
-			{(x+.45), -(x+.55), -(x+.55), (x+.55), (x+.55), (x+.55)},
-			{-(x+.55), -(x+.55), -(x+.55), (x+.55), (x+.55), -(x+.45)},
-			{-(x+.55), (x+.45), -(x+.55), (x+.55), (x+.55), (x+.55)}, -- top
-			{-(x+.55), -(x+.55), -(x+.55), (x+.55), -(x+.45), (x+.55)}, -- bottom
+			{-(r+.55), -(r+.55), -(r+.55), -(r+.45), (r+.55), (r+.55)}, -- sides
+			{-(r+.55), -(r+.55), (r+.45), (r+.55), (r+.55), (r+.55)},
+			{(r+.45), -(r+.55), -(r+.55), (r+.55), (r+.55), (r+.55)},
+			{-(r+.55), -(r+.55), -(r+.55), (r+.55), (r+.55), -(r+.45)},
+			{-(r+.55), (r+.45), -(r+.55), (r+.55), (r+.55), (r+.55)}, -- top
+			{-(r+.55), -(r+.55), -(r+.55), (r+.55), -(r+.45), (r+.55)}, -- bottom
 			{-.55,-.55,-.55, .55,.55,.55} -- middle (surrounding protector)
 		}
 	},
@@ -721,5 +721,88 @@ if minetest.get_modpath("mesecons_mvps") then
 	mesecon.register_mvps_stopper("protector:protect_hidden")
 	mesecon.register_mvps_stopper("protector:chest")
 end
+
+-- player command to add member names to local protection
+
+minetest.register_chatcommand("protector_add_member", {
+	params = "",
+	description = S("Add member names to local protection"),
+	privs = {interact = true},
+
+	func = function(name, param)
+
+		if param == "" then return end
+
+		local to_add = param:split(" ")
+		local player = minetest.get_player_by_name(name)
+		local pos = player:get_pos()
+
+		-- find the protector nodes
+		local pos = minetest.find_nodes_in_area(
+				{x = pos.x - r, y = pos.y - r, z = pos.z - r},
+				{x = pos.x + r, y = pos.y + r, z = pos.z + r},
+				{"protector:protect", "protector:protect2", "protector:protect_hidden"})
+
+		local meta, owner
+
+		for n = 1, #pos do
+
+			meta = minetest.get_meta(pos[n])
+			owner = meta:get_string("owner") or ""
+
+			if owner == name
+			or minetest.check_player_privs(name, {protection_bypass = true}) then
+
+				for m = 1, #to_add do
+					add_member(meta, to_add[m])
+				end
+
+				minetest.add_entity(pos[n], "protector:display")
+			end
+		end
+	end
+})
+
+-- player command to remove member names from local protection
+
+minetest.register_chatcommand("protector_del_member", {
+	params = "",
+	description = S("Remove member names from local protection"),
+	privs = {interact = true},
+
+	func = function(name, param)
+
+		if param == "" then return end
+
+		local to_del = param:split(" ")
+		local player = minetest.get_player_by_name(name)
+		local pos = player:get_pos()
+
+		-- find the protector nodes
+		local pos = minetest.find_nodes_in_area(
+				{x = pos.x - r, y = pos.y - r, z = pos.z - r},
+				{x = pos.x + r, y = pos.y + r, z = pos.z + r},
+				{"protector:protect", "protector:protect2", "protector:protect_hidden"})
+
+		local meta, owner
+
+		for n = 1, #pos do
+
+			meta = minetest.get_meta(pos[n])
+			owner = meta:get_string("owner") or ""
+
+			if owner == name
+			or minetest.check_player_privs(name, {protection_bypass = true}) then
+
+				for m = 1, #to_del do
+					del_member(meta, to_del[m])
+				end
+
+				minetest.add_entity(pos[n], "protector:display")
+			end
+		end
+	end
+})
+
 
 print ("[MOD] Protector Redo loaded")
