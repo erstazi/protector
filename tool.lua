@@ -1,4 +1,3 @@
-
 -- protector placement tool (thanks to Shara for code and idea)
 
 local S = minetest.get_translator("protector")
@@ -110,8 +109,9 @@ minetest.register_craftitem("protector:tool", {
 		local inv = minetest.get_inventory({type = "node", pos = pos})
 
 		if inv then
-			minetest.chat_send_player(name, S("Cannot place protector, container at") ..
-					" " .. minetest.pos_to_string(pos))
+			minetest.chat_send_player(name, 
+					S("Cannot place protector, container at @1",
+						minetest.pos_to_string(pos)))
 			return
 		end
 
@@ -119,8 +119,8 @@ minetest.register_craftitem("protector:tool", {
 		if minetest.is_protected(pos, name) then
 
 			minetest.chat_send_player(name,
-					S("Cannot place protector, already protected at")
-					.. " " .. minetest.pos_to_string(pos))
+					S("Cannot place protector, already protected at @1",
+						minetest.pos_to_string(pos)))
 			return
 		end
 
@@ -131,7 +131,7 @@ minetest.register_craftitem("protector:tool", {
 		local meta = minetest.get_meta(pos)
 
 		meta:set_string("owner", name)
-		meta:set_string("infotext", "Protection (owned by " .. name .. ")")
+		meta:set_string("infotext", S("Protection (owned by @1)", name))
 
 		-- copy members across if holding sneak when using tool
 		if user:get_player_control().sneak then
@@ -141,7 +141,7 @@ minetest.register_craftitem("protector:tool", {
 		end
 
 		minetest.chat_send_player(name,
-				S("Protector placed at") .. " " ..  minetest.pos_to_string(pos))
+				S("Protector placed at @1", minetest.pos_to_string(pos)))
 	end
 })
 
