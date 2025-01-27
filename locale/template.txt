@@ -1,7 +1,7 @@
 ### admin.lua ###
 Remove Protectors around players (separate names with spaces)=
 <names list>=
-Replace Protector Owner with name provided=Koruyucu Sahibini belirtilen adla değiştirin
+Replace Protector Owner with name provided=
 <owner name> <name to replace with>=
 Replacing Protector name '@1' with '@2'=
 Show protected areas of your nearby protectors=
@@ -29,7 +29,7 @@ Members: @1.=
 This area is not protected.=
 You can build here.=
 Overlaps into above players protected area=
-Protection Block=Koruma kutusu
+Protection Block=
 Protection (owned by @1)=
 Protection Logo=
 [MOD] Protector Redo loaded=
