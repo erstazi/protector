@@ -1,4 +1,3 @@
-
 -- get static spawn position
 
 local statspawn = minetest.string_to_pos(minetest.settings:get("static_spawnpoint"))
@@ -63,7 +62,7 @@ and minetest.settings:get_bool("protector_pvp") then
 			return false
 		end)
 	else
-		print("[MOD] Protector - pvp_protect not active, update your version of Minetest")
+		print("[MOD] Protector - pvp_protect not active, update your version of Luanti")
 	end
 else
 	print("[MOD] Protector - pvp_protect is disabled")
