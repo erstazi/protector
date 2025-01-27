@@ -8,7 +8,7 @@ local radius = protector.radius
 
 local hud = {}
 local hud_timer = 0
-local hud_interval = (tonumber(minetest.settings:get("protector_hud_interval")) or 5)
+local hud_interval = (tonumber(minetest.settings:get("protector_hud_interval")) or 4)
 local hud_style = minetest.has_feature("hud_def_type_field")
 
 if hud_interval > 0 then
@@ -37,8 +37,13 @@ minetest.register_globalstep(function(dtime)
 			local npos = protectors[1]
 			local meta = minetest.get_meta(npos)
 			local nodeowner = meta:get_string("owner")
+			local members =  meta:get_string("members"):split(" ")
 
 			hud_text = S("Owner: @1", nodeowner)
+
+			if #members > 0 then
+				hud_text = hud_text .. " [" .. #members .. "]"
+			end
 		end
 
 		if not hud[name] then
