@@ -21,6 +21,9 @@ Protected Chest=Korumalı sandık
 To Chest=Sandığa
 To Inventory=Envantere
 Protected Chest (@1)=Korumalı sandık (@1)
+Invalid player name!=
+Player name too long=
+Player not found.=
 
 ### init.lua ###
 -- Protector interface --=-- Koruyucu arayüz --
@@ -30,6 +33,7 @@ Members:=Üyeler
 Close=Kapat
 Protection located at: @1=Korumanın bulunduğu yer  @1
 Members: @1.=Üyeler  @1.
+Allow faction access=
 This area is not protected.=Bu alan korumalı değildir.
 You can build here.=Buraya inşaa edebilirsiniz.
 Overlaps into above players protected area=Yukarıdaki oyuncuların koruma alanı ile çakışıyor
@@ -40,11 +44,6 @@ Protection Logo=Koruma arması
 Spawn @1 has been protected up to a @2 block radius.=Spawn @1, @2 blok yarıçapa kadar korunur.
 This area is owned by @1=Burasının sahibi @1!
 
-### pvp.lua ###
-[Protector] on_punchplayer called with nil objects=[Protector] on_punchplayer boş objelerle çağrıldı
-[Protector] pvp_protect not active, update your version of Luanti=[Protector] pvp_protect aktif değil, Luanti sürümünüzü güncelleyin.
-[Protector] pvp_protect is disabled=[Protector] pvp_protect kapatıldı.
-
 ### hud.lua ###
 Owner: @1=Sahip: @1
 
@@ -53,3 +52,4 @@ Protector Placer Tool (stand near protector, face direction and use)=Koruyucu Ye
 Protector already in place!=Koruyucu zaten yerinde!
 No protectors available to place!=Yerleştirilecek koruyucu yok!
 Protector placed at @1=Korumanın bulunduğu yer @1
+Out of bounds!=
