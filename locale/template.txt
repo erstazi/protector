@@ -7,6 +7,9 @@ Replacing Protector name '@1' with '@2'=
 Show protected areas of your nearby protectors=
 Protector Names to remove: @1=
 Name List Reset=
+Invalid player name!=
+Player name too long=
+Player not found.=
 
 ### doors_chest.lua ###
 Protected Wooden Door=
@@ -26,6 +29,7 @@ Members:=
 Close=
 Protection located at: @1=
 Members: @1.=
+Allow faction access=
 This area is not protected.=
 You can build here.=
 Overlaps into above players protected area=
@@ -35,11 +39,8 @@ Protection Logo=
 [MOD] Protector Redo loaded=
 Spawn @1 has been protected up to a @2 block radius.=
 This area is owned by @1=
-
-### pvp.lua ###
-[Protector] on_punchplayer called with nil objects=
-[Protector] pvp_protect not active, update your version of Luanti=
-[Protector] pvp_protect is disabled=
+Add member names to local protection
+Remove member names from local protection
 
 ### hud.lua ###
 Owner: @1=
@@ -47,5 +48,6 @@ Owner: @1=
 ### tool.lua ###
 Protector Placer Tool (stand near protector, face direction and use)=
 Protector already in place!=
+Out of bounds!=
 No protectors available to place!=
 Protector placed at @1=
