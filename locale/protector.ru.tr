@@ -10,7 +10,10 @@ Replace Protector Owner with name provided=Заменить Владельца �
 Replacing Protector name '@1' with '@2'=Замена Имени Защитника '@1' с '@2'
 Show protected areas of your nearby protectors=Показать защищённые зоны Защитниками с вами неподалёку
 Protector Names to remove: @1=Имена Защитников чтобы удалить: @1
-Name List Reset=Сбросить Список Имён
+Name List Reset=Сброс Список Имён
+Invalid player name!=Неправильное имя игрока!
+Player name too long=Имя игрока слишком длинное
+Player not found.=Игрок не найден.
 
 ### doors_chest.lua ###
 Protected Wooden Door=Защищённая Деревянная Дверь
@@ -28,6 +31,7 @@ PUNCH node to show protected area=УДАРЬТЕ по блоку чтобы по
 USE for area check=ИСПОЛЬЗУЙТЕ для проверки зоны
 Members:=Участники:
 Close=Закрыть
+Allow faction access=
 Protection located at: @1=Защитник расположен на: @1
 Members: @1.=Участники: @1.
 This area is not protected.=Эта зона не защищена.
@@ -52,4 +56,5 @@ Owner: @1=Владелец: @1
 Protector Placer Tool (stand near protector, face direction and use)=Инструмент Размещения Защитника (встаньте рядом с Защитником, повернитесь к нему и используйте предмет)
 Protector already in place!=Защитник уже стоит на этом месте!
 No protectors available to place!=Нет доступных Защитников чтобы поставить!
+Out of bounds!=
 Protector placed at @1=Защитник размещён на @1
