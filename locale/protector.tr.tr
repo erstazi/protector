@@ -53,3 +53,5 @@ Protector already in place!=Koruyucu zaten yerinde!
 No protectors available to place!=Yerleştirilecek koruyucu yok!
 Protector placed at @1=Korumanın bulunduğu yer @1
 Out of bounds!=
+Cannot place protector, already protected at @1=
+Cannot place protector, container at @1=
