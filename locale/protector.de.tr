@@ -53,3 +53,5 @@ Protector already in place!=Störschutz is bereits platziert!
 No protectors available to place!=Keine Störschützer mehr im Inventar!
 "Protector placed at @1"=Störschutz befindet sich bei: @1
 Out of bounds!=
+Cannot place protector, already protected at @1=
+Cannot place protector, container at @1=
