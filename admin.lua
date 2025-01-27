@@ -186,7 +186,7 @@ minetest.register_chatcommand("protector_show", {
 		local player = minetest.get_player_by_name(name)
 
 		if not player then
-			return false, "Player not found"
+			return false, S("Player not found.")
 		end
 
 		local pos = player:get_pos()
@@ -223,7 +223,7 @@ minetest.register_chatcommand("protector_hide", {
 		local player = minetest.get_player_by_name(name)
 
 		if not player then
-			return false, "Player not found"
+			return false, S("Player not found.")
 		end
 
 		local pos = player:get_pos()
