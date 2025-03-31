@@ -303,7 +303,9 @@ local name = "protector:door_wood"
 register_door(name, {
 	description = S("Protected Wooden Door"),
 	inventory_image = "doors_wood.png^protector_logo.png",
-	groups = {snappy = 1, choppy = 2, dig_immediate = 2, unbreakable = 1, axey = 1},
+	groups = {
+		snappy = 1, choppy = 2, dig_immediate = 2, unbreakable = 1, axey = 1, handy = 1
+	},
 	tiles_bottom = {"doors_wood_b.png^protector_logo.png", "doors_brown.png"},
 	tiles_top = {"doors_wood_a.png", "doors_brown.png"},
 	sounds = default.node_sound_wood_defaults(),
@@ -344,7 +346,7 @@ register_door(name, {
 	description = S("Protected Steel Door"),
 	inventory_image = "doors_steel.png^protector_logo.png",
 	groups = {
-		snappy = 1, cracky = 1,
+		snappy = 1, cracky = 1, handy = 1,
 		level = (mcl and 0 or 2), pickaxey = 2, unbreakable = 1
 	},
 	tiles_bottom = {"doors_steel_b.png^protector_logo.png", "doors_grey.png"},
@@ -486,7 +488,7 @@ register_trapdoor("protector:trapdoor_steel", {
 	tile_side = "doors_trapdoor_steel_side.png",
 	groups = {
 		snappy = 1, bendy = 2, cracky = 1, level = (mcl and 0 or 2),
-		unbreakable = 1, pickaxey = 2
+		unbreakable = 1, pickaxey = 2, handy = 1
 	},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
