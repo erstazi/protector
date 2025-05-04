@@ -1,23 +1,23 @@
 
 -- translation
 
-local S = minetest.get_translator("protector")
-local F = minetest.formspec_escape
+local S = core.get_translator("protector")
+local F = core.formspec_escape
 
 -- MineClone support
 
-local mcl = minetest.get_modpath("mcl_core")
-local mcf = minetest.get_modpath("mcl_formspec")
+local mcl = core.get_modpath("mcl_core")
+local mcf = core.get_modpath("mcl_formspec")
 
 -- Are crafts enabled?
 
-local protector_crafts = minetest.settings:get_bool("protector_crafts") ~= false
+local protector_crafts = core.settings:get_bool("protector_crafts") ~= false
 
 -- Protected Chest
 
 local chest_size = mcl and (9 * 3) or (8 * 4)
 
-minetest.register_node("protector:chest", {
+core.register_node("protector:chest", {
 	description = S("Protected Chest"),
 	tiles = {
 		"default_chest_top.png", "default_chest_top.png",
@@ -32,7 +32,7 @@ minetest.register_node("protector:chest", {
 
 	on_construct = function(pos)
 
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 
 		meta:set_string("infotext", S("Protected Chest"))
@@ -42,12 +42,12 @@ minetest.register_node("protector:chest", {
 
 	can_dig = function(pos,player)
 
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 
 		if inv:is_empty("main") then
 
-			if not minetest.is_protected(pos, player:get_player_name()) then
+			if not core.is_protected(pos, player:get_player_name()) then
 				return true
 			end
 		end
@@ -55,26 +55,26 @@ minetest.register_node("protector:chest", {
 
 	on_metadata_inventory_put = function(pos, listname, index, stack, player)
 
-		minetest.log("action", player:get_player_name()
-			.. " moves stuff to protected chest at " .. minetest.pos_to_string(pos))
+		core.log("action", player:get_player_name()
+			.. " moves stuff to protected chest at " .. core.pos_to_string(pos))
 	end,
 
 	on_metadata_inventory_take = function(pos, listname, index, stack, player)
 
-		minetest.log("action", player:get_player_name()
-			.. " takes stuff from protected chest at " .. minetest.pos_to_string(pos))
+		core.log("action", player:get_player_name()
+			.. " takes stuff from protected chest at " .. core.pos_to_string(pos))
 	end,
 
 	on_metadata_inventory_move = function(
 			pos, from_list, from_index, to_list, to_index, count, player)
 
-		minetest.log("action", player:get_player_name()
-			.. " moves stuff inside protected chest at " .. minetest.pos_to_string(pos))
+		core.log("action", player:get_player_name()
+			.. " moves stuff inside protected chest at " .. core.pos_to_string(pos))
 	end,
 
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 
-		if minetest.is_protected(pos, player:get_player_name()) then
+		if core.is_protected(pos, player:get_player_name()) then
 			return 0
 		end
 
@@ -83,7 +83,7 @@ minetest.register_node("protector:chest", {
 
 	allow_metadata_inventory_take = function(pos, listname, index, stack, player)
 
-		if minetest.is_protected(pos, player:get_player_name()) then
+		if core.is_protected(pos, player:get_player_name()) then
 			return 0
 		end
 
@@ -93,7 +93,7 @@ minetest.register_node("protector:chest", {
 	allow_metadata_inventory_move = function(
 			pos, from_list, from_index, to_list, to_index, count, player)
 
-		if minetest.is_protected(pos, player:get_player_name()) then
+		if core.is_protected(pos, player:get_player_name()) then
 			return 0
 		end
 
@@ -102,9 +102,9 @@ minetest.register_node("protector:chest", {
 
 	on_rightclick = function(pos, node, clicker)
 
-		if minetest.is_protected(pos, clicker:get_player_name()) then return end
+		if core.is_protected(pos, clicker:get_player_name()) then return end
 
-		local meta = minetest.get_meta(pos) ; if not meta then return end
+		local meta = core.get_meta(pos) ; if not meta then return end
 
 		local spos = pos.x .. "," .. pos.y .. "," ..pos.z
 		local formspec
@@ -113,14 +113,14 @@ minetest.register_node("protector:chest", {
 		if mcl and mcf then
 
 			formspec = "size[9,8.75]"
-			.. "label[0,0;" .. minetest.formspec_escape(
-					minetest.colorize("#313131", "Protected Chest")) .. "]"
+			.. "label[0,0;" .. core.formspec_escape(
+					core.colorize("#313131", "Protected Chest")) .. "]"
 			.. "list[nodemeta:" .. spos .. ";main;0,0.5;9,3;]"
 			.. mcl_formspec.get_itemslot_bg(0,0.5,9,3)
 			.. "image_button[3.0,3.5;1.05,0.8;protector_up_icon.png;protect_up;]"
 			.. "image_button[4.0,3.5;1.05,0.8;protector_down_icon.png;protect_down;]"
-			.. "label[0,4.0;" .. minetest.formspec_escape(
-					minetest.colorize("#313131", "Inventory")) .. "]"
+			.. "label[0,4.0;" .. core.formspec_escape(
+					core.colorize("#313131", "Inventory")) .. "]"
 			.. "list[current_player;main;0,4.5;9,3;9]"
 			.. mcl_formspec.get_itemslot_bg(0,4.5,9,3)
 			.. "list[current_player;main;0,7.74;9,1;]"
@@ -148,8 +148,8 @@ minetest.register_node("protector:chest", {
 			.. "listring[current_player;main]"
 		end
 
-		minetest.show_formspec(clicker:get_player_name(),
-				"protector:chest_" .. minetest.pos_to_string(pos), formspec)
+		core.show_formspec(clicker:get_player_name(),
+				"protector:chest_" .. core.pos_to_string(pos), formspec)
 	end,
 
 	on_blast = function() end
@@ -182,16 +182,16 @@ end
 
 -- Protected Chest formspec buttons
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 
 	if string.sub(formname, 0, 16) ~= "protector:chest_" then return end
 
 	local pos_s = string.sub(formname, 17)
-	local pos = minetest.string_to_pos(pos_s)
+	local pos = core.string_to_pos(pos_s)
 
-	if minetest.is_protected(pos, player:get_player_name()) then return end
+	if core.is_protected(pos, player:get_player_name()) then return end
 
-	local meta = minetest.get_meta(pos) ; if not meta then return end
+	local meta = core.get_meta(pos) ; if not meta then return end
 	local chest_inv = meta:get_inventory() ; if not chest_inv then return end
 	local player_inv = player:get_inventory()
 
@@ -231,12 +231,12 @@ if protector_crafts then
 
 	if mcl then
 
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:chest",
 			recipe = { {"mcl_chests:chest", "mcl_core:gold_ingot"} }
 		})
 	else
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:chest",
 			recipe = {
 				{"group:wood", "group:wood", "group:wood"},
@@ -245,7 +245,7 @@ if protector_crafts then
 			}
 		})
 
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:chest",
 			recipe = { {"default:chest", "default:copper_ingot"} }
 		})

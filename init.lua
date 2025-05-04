@@ -1,7 +1,7 @@
 
 -- default support (for use with MineClone2 and other [games]
 
-if not minetest.global_exists("default") then
+if not core.global_exists("default") then
 
 	default = {
 		node_sound_stone_defaults = function(table) return {} end,
@@ -11,7 +11,7 @@ if not minetest.global_exists("default") then
 	}
 end
 
-if minetest.get_modpath("mcl_sounds") then
+if core.get_modpath("mcl_sounds") then
 	default.node_sound_stone_defaults = mcl_sounds.node_sound_stone_defaults
 	default.node_sound_wood_defaults = mcl_sounds.node_sound_wood_defaults
 	default.node_sound_metal_defaults = mcl_sounds.node_sound_metal_defaults
@@ -19,16 +19,16 @@ end
 
 -- modpath, formspec helper and translator
 
-local MP = minetest.get_modpath(minetest.get_current_modname())
-local F = minetest.formspec_escape
-local S = minetest.get_translator("protector")
+local MP = core.get_modpath(core.get_current_modname())
+local F = core.formspec_escape
+local S = core.get_translator("protector")
 
 -- global table
 
 protector = {
 	mod = "redo",
 	max_shares = 12,
-	radius = tonumber(minetest.settings:get("protector_radius")) or 5
+	radius = tonumber(core.settings:get("protector_radius")) or 5
 }
 
 -- radius limiter (minetest cannot handle node volume of more than 4096000)
@@ -37,7 +37,7 @@ if protector.radius > 30 then protector.radius = 30 end
 
 -- playerfactions check
 
-local factions_available = minetest.global_exists("factions")
+local factions_available = core.global_exists("factions")
 
 if factions_available then protector.max_shares = 8 end
 
@@ -47,17 +47,17 @@ local math_floor, math_pi = math.floor, math.pi
 
 -- settings
 
-local protector_flip = minetest.settings:get_bool("protector_flip") or false
-local protector_hurt = tonumber(minetest.settings:get("protector_hurt")) or 0
-local protector_spawn = tonumber(minetest.settings:get("protector_spawn")
-	or minetest.settings:get("protector_pvp_spawn")) or 0
-local protector_show = tonumber(minetest.settings:get("protector_show_interval")) or 5
-local protector_recipe = minetest.settings:get_bool("protector_recipe") ~= false
-local protector_msg = minetest.settings:get_bool("protector_msg") ~= false
+local protector_flip = core.settings:get_bool("protector_flip") or false
+local protector_hurt = tonumber(core.settings:get("protector_hurt")) or 0
+local protector_spawn = tonumber(core.settings:get("protector_spawn")
+	or core.settings:get("protector_pvp_spawn")) or 0
+local protector_show = tonumber(core.settings:get("protector_show_interval")) or 5
+local protector_recipe = core.settings:get_bool("protector_recipe") ~= false
+local protector_msg = core.settings:get_bool("protector_msg") ~= false
 
 -- get static spawn position
 
-local statspawn = minetest.string_to_pos(minetest.settings:get("static_spawnpoint"))
+local statspawn = core.string_to_pos(core.settings:get("static_spawnpoint"))
 		or {x = 0, y = 2, z = 0}
 
 -- return list of members as a table
@@ -254,7 +254,7 @@ local function show_msg(player_name, msg)
 	-- if messages disabled or no player name provided
 	if protector_msg == false or not player_name or player_name == "" then return end
 
-	minetest.chat_send_player(player_name, msg)
+	core.chat_send_player(player_name, msg)
 end
 
 -- Infolevel:
@@ -269,7 +269,7 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 
 	-- protector_bypass privileged users can override protection
 	if infolevel == 1
-	and minetest.check_player_privs(digger, {protection_bypass = true}) then
+	and core.check_player_privs(digger, {protection_bypass = true}) then
 		return true
 	end
 
@@ -280,13 +280,13 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 	if inside_spawn(pos, protector_spawn) then
 
 		show_msg(digger, S("Spawn @1 has been protected up to a @2 block radius.",
-				minetest.pos_to_string(statspawn), protector_spawn))
+				core.pos_to_string(statspawn), protector_spawn))
 
 		return false
 	end
 
 	-- find the protector nodes
-	local pos = minetest.find_nodes_in_area(
+	local pos = core.find_nodes_in_area(
 			{x = pos.x - r, y = pos.y - r, z = pos.z - r},
 			{x = pos.x + r, y = pos.y + r, z = pos.z + r},
 			{"protector:protect", "protector:protect2", "protector:protect_hidden"})
@@ -295,7 +295,7 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 
 	for n = 1, #pos do
 
-		meta = minetest.get_meta(pos[n])
+		meta = core.get_meta(pos[n])
 		owner = meta:get_string("owner") or ""
 		members = meta:get_string("members") or ""
 
@@ -314,14 +314,14 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 		-- when using protector as tool, show protector information
 		if infolevel == 2 then
 
-			minetest.chat_send_player(digger,
+			core.chat_send_player(digger,
 					S("This area is owned by @1", owner) .. ".")
 
-			minetest.chat_send_player(digger,
-					S("Protection located at: @1", minetest.pos_to_string(pos[n])))
+			core.chat_send_player(digger,
+					S("Protection located at: @1", core.pos_to_string(pos[n])))
 
 			if members ~= "" then
-				minetest.chat_send_player(digger, S("Members: @1.", members))
+				core.chat_send_player(digger, S("Members: @1.", members))
 			end
 
 			return false
@@ -333,10 +333,10 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 	if infolevel == 2 then
 
 		if #pos < 1 then
-			minetest.chat_send_player(digger, S("This area is not protected."))
+			core.chat_send_player(digger, S("This area is not protected."))
 		end
 
-		minetest.chat_send_player(digger, S("You can build here."))
+		core.chat_send_player(digger, S("You can build here."))
 	end
 
 	return true
@@ -344,9 +344,9 @@ end
 
 -- add protector hurt and flip to protection violation function
 
-minetest.register_on_protection_violation(function(pos, name)
+core.register_on_protection_violation(function(pos, name)
 
-	local player = minetest.get_player_by_name(name)
+	local player = core.get_player_by_name(name)
 
 	if player and player:is_player() then
 
@@ -354,7 +354,7 @@ minetest.register_on_protection_violation(function(pos, name)
 		if protector_hurt > 0 and player:get_hp() > 0 then
 
 			-- This delay fixes item duplication bug (thanks luk3yx)
-			minetest.after(0.1, function(player)
+			core.after(0.1, function(player)
 				player:set_hp(player:get_hp() - protector_hurt)
 			end, player)
 		end
@@ -386,11 +386,11 @@ end)
 
 -- backup old is_protected function
 
-local old_is_protected = minetest.is_protected
+local old_is_protected = core.is_protected
 
 -- check for protected area, return true if protected and digger isn't on list
 
-function minetest.is_protected(pos, digger)
+function core.is_protected(pos, digger)
 
 	digger = digger or "" -- nil check
 
@@ -415,9 +415,9 @@ local function check_overlap(itemstack, placer, pointed_thing)
 	-- make sure protector doesn't overlap onto protected spawn area
 	if inside_spawn(pos, protector_spawn + protector.radius) then
 
-		minetest.chat_send_player(name,
+		core.chat_send_player(name,
 				S("Spawn @1 has been protected up to a @2 block radius.",
-				minetest.pos_to_string(statspawn), protector_spawn))
+				core.pos_to_string(statspawn), protector_spawn))
 
 		return itemstack
 	end
@@ -425,20 +425,20 @@ local function check_overlap(itemstack, placer, pointed_thing)
 	-- make sure protector doesn't overlap any other player's area
 	if not protector.can_dig(protector.radius * 2, pos, name, true, 3) then
 
-		minetest.chat_send_player(name,
+		core.chat_send_player(name,
 				S("Overlaps into above players protected area"))
 
 		return itemstack
 	end
 
-	return minetest.item_place(itemstack, placer, pointed_thing)
+	return core.item_place(itemstack, placer, pointed_thing)
 end
 
 -- remove protector display entities
 
 local function del_display(pos)
 
-	local objects = minetest.get_objects_inside_radius(pos, 0.5)
+	local objects = core.get_objects_inside_radius(pos, 0.5)
 
 	for _, v in ipairs(objects) do
 
@@ -456,7 +456,7 @@ local player_pos = {}
 
 local stone_tex = "default_stone.png"
 
-if minetest.get_modpath("nc_terrain") then
+if core.get_modpath("nc_terrain") then
 	stone_tex = "nc_terrain_stone.png"
 end
 
@@ -483,7 +483,7 @@ local def = {
 
 	after_place_node = function(pos, placer)
 
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 
 		meta:set_string("owner", placer:get_player_name() or "")
 		meta:set_string("members", "")
@@ -501,22 +501,22 @@ local def = {
 
 	on_rightclick = function(pos, node, clicker, itemstack)
 
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local name = clicker:get_player_name()
 
 		if meta and protector.can_dig(1, pos, name, true, 1) then
 
 			player_pos[name] = pos
 
-			minetest.show_formspec(name, "protector:node", protector_formspec(meta))
+			core.show_formspec(name, "protector:node", protector_formspec(meta))
 		end
 	end,
 
 	on_punch = function(pos, node, puncher)
 
-		if minetest.is_protected(pos, puncher:get_player_name()) then return end
+		if core.is_protected(pos, puncher:get_player_name()) then return end
 
-		minetest.add_entity(pos, "protector:display")
+		core.add_entity(pos, "protector:display")
 	end,
 
 	can_dig = function(pos, player)
@@ -531,7 +531,7 @@ local def = {
 
 -- protection node
 
-minetest.register_node("protector:protect", table.copy(def))
+core.register_node("protector:protect", table.copy(def))
 
 -- default recipe and alternative for MineClone2
 
@@ -540,12 +540,12 @@ if protector_recipe then
 	local item_gold = "default:gold_ingot"
 	local item_stone = "default:stone"
 
-	if minetest.get_modpath("mcl_core") then
+	if core.get_modpath("mcl_core") then
 		item_gold = "mcl_core:gold_ingot"
 		item_stone = "mcl_core:stone"
 	end
 
-	minetest.register_craft({
+	core.register_craft({
 		output = "protector:protect",
 		recipe = {
 			{item_stone, item_stone, item_stone},
@@ -573,21 +573,21 @@ def.node_box = {
 }
 def.selection_box = {type = "wallmounted"}
 
-minetest.register_node("protector:protect2", table.copy(def))
+core.register_node("protector:protect2", table.copy(def))
 
 -- recipes to switch between protectors
 
-minetest.register_craft({
+core.register_craft({
 	output = "protector:protect", recipe = {{"protector:protect2"}}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "protector:protect2", recipe = {{"protector:protect"}}
 })
 
 -- check formspec buttons or when name entered
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 
 	if formname ~= "protector:node" then return end
 
@@ -611,14 +611,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	-- are we adding member to a protection node ? (csm protection)
-	local nod = minetest.get_node(pos).name
+	local nod = core.get_node(pos).name
 
 	if nod ~= "protector:protect" and nod ~= "protector:protect2" then
 		player_pos[name] = nil
 		return
 	end
 
-	local meta = minetest.get_meta(pos) ; if not meta then return end
+	local meta = core.get_meta(pos) ; if not meta then return end
 
 	-- add faction members
 	if factions_available and fields.faction_members ~= nil then
@@ -643,12 +643,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 
-	minetest.show_formspec(name, formname, protector_formspec(meta))
+	core.show_formspec(name, formname, protector_formspec(meta))
 end)
 
 -- display entity shown when protector node is punched
 
-minetest.register_entity("protector:display", {
+core.register_entity("protector:display", {
 
 	initial_properties = {
 		physical = false,
@@ -676,7 +676,7 @@ minetest.register_entity("protector:display", {
 
 local r = protector.radius
 
-minetest.register_node("protector:display_node", {
+core.register_node("protector:display_node", {
 	tiles = {"protector_display.png"},
 	use_texture_alpha = "clip",
 	walkable = false,
@@ -709,13 +709,13 @@ dofile(MP .. "/admin.lua")
 dofile(MP .. "/tool.lua")
 dofile(MP .. "/hud.lua")
 
-if minetest.get_modpath("lucky_block") then
+if core.get_modpath("lucky_block") then
 	dofile(MP .. "/lucky_block.lua")
 end
 
 -- stop mesecon pistons from pushing protectors
 
-if minetest.get_modpath("mesecons_mvps") then
+if core.get_modpath("mesecons_mvps") then
 	mesecon.register_mvps_stopper("protector:protect")
 	mesecon.register_mvps_stopper("protector:protect2")
 	mesecon.register_mvps_stopper("protector:protect_hidden")
@@ -724,7 +724,7 @@ end
 
 -- player command to add member names to local protection
 
-minetest.register_chatcommand("protector_add_member", {
+core.register_chatcommand("protector_add_member", {
 	params = "",
 	description = S("Add member names to local protection"),
 	privs = {interact = true},
@@ -734,11 +734,11 @@ minetest.register_chatcommand("protector_add_member", {
 		if param == "" then return end
 
 		local to_add = param:split(" ")
-		local player = minetest.get_player_by_name(name)
+		local player = core.get_player_by_name(name)
 		local pos = player:get_pos()
 
 		-- find the protector nodes
-		local pos = minetest.find_nodes_in_area(
+		local pos = core.find_nodes_in_area(
 				{x = pos.x - r, y = pos.y - r, z = pos.z - r},
 				{x = pos.x + r, y = pos.y + r, z = pos.z + r},
 				{"protector:protect", "protector:protect2", "protector:protect_hidden"})
@@ -747,17 +747,17 @@ minetest.register_chatcommand("protector_add_member", {
 
 		for n = 1, #pos do
 
-			meta = minetest.get_meta(pos[n])
+			meta = core.get_meta(pos[n])
 			owner = meta:get_string("owner") or ""
 
 			if owner == name
-			or minetest.check_player_privs(name, {protection_bypass = true}) then
+			or core.check_player_privs(name, {protection_bypass = true}) then
 
 				for m = 1, #to_add do
 					add_member(meta, to_add[m])
 				end
 
-				minetest.add_entity(pos[n], "protector:display")
+				core.add_entity(pos[n], "protector:display")
 			end
 		end
 	end
@@ -765,7 +765,7 @@ minetest.register_chatcommand("protector_add_member", {
 
 -- player command to remove member names from local protection
 
-minetest.register_chatcommand("protector_del_member", {
+core.register_chatcommand("protector_del_member", {
 	params = "",
 	description = S("Remove member names from local protection"),
 	privs = {interact = true},
@@ -775,11 +775,11 @@ minetest.register_chatcommand("protector_del_member", {
 		if param == "" then return end
 
 		local to_del = param:split(" ")
-		local player = minetest.get_player_by_name(name)
+		local player = core.get_player_by_name(name)
 		local pos = player:get_pos()
 
 		-- find the protector nodes
-		local pos = minetest.find_nodes_in_area(
+		local pos = core.find_nodes_in_area(
 				{x = pos.x - r, y = pos.y - r, z = pos.z - r},
 				{x = pos.x + r, y = pos.y + r, z = pos.z + r},
 				{"protector:protect", "protector:protect2", "protector:protect_hidden"})
@@ -788,17 +788,17 @@ minetest.register_chatcommand("protector_del_member", {
 
 		for n = 1, #pos do
 
-			meta = minetest.get_meta(pos[n])
+			meta = core.get_meta(pos[n])
 			owner = meta:get_string("owner") or ""
 
 			if owner == name
-			or minetest.check_player_privs(name, {protection_bypass = true}) then
+			or core.check_player_privs(name, {protection_bypass = true}) then
 
 				for m = 1, #to_del do
 					del_member(meta, to_del[m])
 				end
 
-				minetest.add_entity(pos[n], "protector:display")
+				core.add_entity(pos[n], "protector:display")
 			end
 		end
 	end

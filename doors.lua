@@ -1,15 +1,15 @@
 
 -- doors code from an old client re-used
 
-local S = minetest.get_translator("protector")
+local S = core.get_translator("protector")
 
 -- MineClone support
 
-local mcl = minetest.get_modpath("mcl_core")
+local mcl = core.get_modpath("mcl_core")
 
 -- Are crafts enabled?
 
-local protector_crafts = minetest.settings:get_bool("protector_crafts") ~= false
+local protector_crafts = core.settings:get_bool("protector_crafts") ~= false
 
 -- Registers a door
 
@@ -26,7 +26,7 @@ local function register_door(name, def)
 	def.selection_box_bottom = box
 	def.selection_box_top = box
 
-	minetest.register_craftitem(name, {
+	core.register_craftitem(name, {
 		description = def.description,
 		inventory_image = def.inventory_image,
 
@@ -35,11 +35,11 @@ local function register_door(name, def)
 			if pointed_thing.type ~= "node" then return itemstack end
 
 			local ptu = pointed_thing.under
-			local nu = minetest.get_node(ptu)
+			local nu = core.get_node(ptu)
 
-			if minetest.registered_nodes[nu.name]
-			and minetest.registered_nodes[nu.name].on_rightclick then
-				return minetest.registered_nodes[nu.name].on_rightclick(
+			if core.registered_nodes[nu.name]
+			and core.registered_nodes[nu.name].on_rightclick then
+				return core.registered_nodes[nu.name].on_rightclick(
 						ptu, nu, placer, itemstack)
 			end
 
@@ -48,19 +48,19 @@ local function register_door(name, def)
 
 			pt2.y = pt2.y + 1
 
-			if not minetest.registered_nodes[minetest.get_node(pt).name].buildable_to
-			or not minetest.registered_nodes[minetest.get_node(pt2).name].buildable_to
+			if not core.registered_nodes[core.get_node(pt).name].buildable_to
+			or not core.registered_nodes[core.get_node(pt2).name].buildable_to
 			or not placer or not placer:is_player() then
 				return itemstack
 			end
 
-			if minetest.is_protected(pt, placer:get_player_name())
-			or minetest.is_protected(pt2, placer:get_player_name()) then
-				minetest.record_protection_violation(pt, placer:get_player_name())
+			if core.is_protected(pt, placer:get_player_name())
+			or core.is_protected(pt2, placer:get_player_name()) then
+				core.record_protection_violation(pt, placer:get_player_name())
 				return itemstack
 			end
 
-			local p2 = minetest.dir_to_facedir(placer:get_look_dir())
+			local p2 = core.dir_to_facedir(placer:get_look_dir())
 			local pt3 = {x = pt.x, y = pt.y, z = pt.z}
 
 			if p2 == 0 then     pt3.x = pt3.x - 1
@@ -69,22 +69,22 @@ local function register_door(name, def)
 			elseif p2 == 3 then pt3.z = pt3.z - 1
 			end
 
-			if minetest.get_item_group(minetest.get_node(pt3).name, "prot_door") == 0 then
-				minetest.set_node(pt, {name = name .. "_b_1", param2 = p2})
-				minetest.set_node(pt2, {name = name .. "_t_1", param2 = p2})
+			if core.get_item_group(core.get_node(pt3).name, "prot_door") == 0 then
+				core.set_node(pt, {name = name .. "_b_1", param2 = p2})
+				core.set_node(pt2, {name = name .. "_t_1", param2 = p2})
 			else
-				minetest.set_node(pt, {name = name .. "_b_2", param2 = p2})
-				minetest.set_node(pt2, {name = name .. "_t_2", param2 = p2})
+				core.set_node(pt, {name = name .. "_b_2", param2 = p2})
+				core.set_node(pt2, {name = name .. "_t_2", param2 = p2})
 
-				minetest.get_meta(pt):set_int("right", 1)
-				minetest.get_meta(pt2):set_int("right", 1)
+				core.get_meta(pt):set_int("right", 1)
+				core.get_meta(pt2):set_int("right", 1)
 			end
 
-			if not minetest.settings:get_bool("creative_mode") then
+			if not core.settings:get_bool("creative_mode") then
 				itemstack:take_item()
 			end
 
-			minetest.sound_play(def.sounds.place, {pos = pt2}, true)
+			core.sound_play(def.sounds.place, {pos = pt2}, true)
 
 			return itemstack
 		end
@@ -95,10 +95,10 @@ local function register_door(name, def)
 
 	local function after_dig_node(pos, name, digger)
 
-		local node = minetest.get_node(pos)
+		local node = core.get_node(pos)
 
 		if node.name == name then
-			minetest.node_dig(pos, node, digger)
+			core.node_dig(pos, node, digger)
 		end
 	end
 
@@ -106,19 +106,19 @@ local function register_door(name, def)
 
 		pos.y = pos.y + dir
 
-		if minetest.get_node(pos).name ~= check_name then return end
+		if core.get_node(pos).name ~= check_name then return end
 
-		local p2 = minetest.get_node(pos).param2
+		local p2 = core.get_node(pos).param2
 
 		p2 = params[p2 + 1]
 
-		minetest.swap_node(pos, {name = replace_dir, param2 = p2})
+		core.swap_node(pos, {name = replace_dir, param2 = p2})
 
 		pos.y = pos.y - dir
 
-		minetest.swap_node(pos, {name = replace, param2=p2})
+		core.swap_node(pos, {name = replace, param2=p2})
 
-		minetest.sound_play(def.open_sound,
+		core.sound_play(def.open_sound,
 				{pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 	end
 
@@ -128,29 +128,29 @@ local function register_door(name, def)
 
 		pos.y = pos.y + dir
 
-		if minetest.get_node(pos).name ~= check_name then return false end
+		if core.get_node(pos).name ~= check_name then return false end
 
-		if minetest.is_protected(pos, user:get_player_name()) then
-			minetest.record_protection_violation(pos, user:get_player_name())
+		if core.is_protected(pos, user:get_player_name()) then
+			core.record_protection_violation(pos, user:get_player_name())
 			return false
 		end
 
-		local node2 = minetest.get_node(pos)
+		local node2 = core.get_node(pos)
 
 		node2.param2 = (node2.param2 + 1) % 4
 
-		minetest.swap_node(pos, node2)
+		core.swap_node(pos, node2)
 
 		pos.y = pos.y - dir
 
 		node.param2 = (node.param2 + 1) % 4
 
-		minetest.swap_node(pos, node)
+		core.swap_node(pos, node)
 
 		return true
 	end
 
-	minetest.register_node(name .. "_b_1", {
+	core.register_node(name .. "_b_1", {
 		tiles = {tb[2], tb[2], tb[2], tb[2], tb[1], tb[1] .. "^[transformfx"},
 		paramtype = "light",
 		paramtype2 = "facedir",
@@ -172,7 +172,7 @@ local function register_door(name, def)
 
 		on_rightclick = function(pos, node, clicker)
 
-			if not minetest.is_protected(pos, clicker:get_player_name()) then
+			if not core.is_protected(pos, clicker:get_player_name()) then
 				on_rightclick(pos, 1, name .. "_t_1", name .. "_b_2",
 						name .. "_t_2", {1,2,3,0})
 			end
@@ -187,7 +187,7 @@ local function register_door(name, def)
 		on_blast = function() end
 	})
 
-	minetest.register_node(name .. "_t_1", {
+	core.register_node(name .. "_t_1", {
 		tiles = {tt[2], tt[2], tt[2], tt[2], tt[1], tt[1] .. "^[transformfx"},
 		paramtype = "light",
 		paramtype2 = "facedir",
@@ -208,7 +208,7 @@ local function register_door(name, def)
 		end,
 
 		on_rightclick = function(pos, node, clicker)
-			if not minetest.is_protected(pos, clicker:get_player_name()) then
+			if not core.is_protected(pos, clicker:get_player_name()) then
 				on_rightclick(pos, -1, name .. "_b_1", name .. "_t_2",
 						name .. "_b_2", {1,2,3,0})
 			end
@@ -223,7 +223,7 @@ local function register_door(name, def)
 		on_blast = function() end
 	})
 
-	minetest.register_node(name .. "_b_2", {
+	core.register_node(name .. "_b_2", {
 		tiles = {tb[2], tb[2], tb[2], tb[2], tb[1] .. "^[transformfx", tb[1]},
 		paramtype = "light",
 		paramtype2 = "facedir",
@@ -244,7 +244,7 @@ local function register_door(name, def)
 		end,
 
 		on_rightclick = function(pos, node, clicker)
-			if not minetest.is_protected(pos, clicker:get_player_name()) then
+			if not core.is_protected(pos, clicker:get_player_name()) then
 				on_rightclick(pos, 1, name .. "_t_2", name .. "_b_1",
 						name .. "_t_1", {3,0,1,2})
 			end
@@ -259,7 +259,7 @@ local function register_door(name, def)
 		on_blast = function() end
 	})
 
-	minetest.register_node(name .. "_t_2", {
+	core.register_node(name .. "_t_2", {
 		tiles = {tt[2], tt[2], tt[2], tt[2], tt[1] .. "^[transformfx", tt[1]},
 		paramtype = "light",
 		paramtype2 = "facedir",
@@ -280,7 +280,7 @@ local function register_door(name, def)
 		end,
 
 		on_rightclick = function(pos, node, clicker)
-			if not minetest.is_protected(pos, clicker:get_player_name()) then
+			if not core.is_protected(pos, clicker:get_player_name()) then
 				on_rightclick(pos, -1, name .. "_b_2", name .. "_t_1",
 						name .. "_b_1", {3,0,1,2})
 			end
@@ -317,12 +317,12 @@ if protector_crafts then
 
 	if mcl then
 
-		minetest.register_craft({
+		core.register_craft({
 			output = name,
 			recipe = { {"mcl_doors:wooden_door", "mcl_core:gold_ingot"} }
 		})
 	else
-		minetest.register_craft({
+		core.register_craft({
 			output = name,
 			recipe = {
 				{"group:wood", "group:wood"},
@@ -331,7 +331,7 @@ if protector_crafts then
 			}
 		})
 
-		minetest.register_craft({
+		core.register_craft({
 			output = name,
 			recipe = { {"doors:door_wood", "default:copper_ingot"} }
 		})
@@ -360,12 +360,12 @@ if protector_crafts then
 
 	if mcl then
 
-		minetest.register_craft({
+		core.register_craft({
 			output = name,
 			recipe = { {"mcl_doors:iron_door", "mcl_core:gold_ingot"} }
 		})
 	else
-		minetest.register_craft({
+		core.register_craft({
 			output = name,
 			recipe = {
 				{"default:steel_ingot", "default:steel_ingot"},
@@ -374,7 +374,7 @@ if protector_crafts then
 			}
 		})
 
-		minetest.register_craft({
+		core.register_craft({
 			output = name,
 			recipe = { {"doors:door_steel", "default:copper_ingot"} }
 		})
@@ -390,14 +390,14 @@ local function register_trapdoor(name, def)
 
 	def.on_rightclick = function (pos, node, clicker, itemstack, pointed_thing)
 
-		if minetest.is_protected(pos, clicker:get_player_name()) then return end
+		if core.is_protected(pos, clicker:get_player_name()) then return end
 
 		local newname = node.name == name_closed and name_opened or name_closed
 
-		minetest.sound_play(def.open_sound,
+		core.sound_play(def.open_sound,
 				{pos = pos, gain = 0.3, max_hear_distance = 10}, true)
 
-		minetest.swap_node(pos,
+		core.swap_node(pos,
 				{name = newname, param1 = node.param1, param2 = node.param2})
 	end
 
@@ -435,8 +435,8 @@ local function register_trapdoor(name, def)
 	def_opened.drop = name_closed
 	def_opened.groups.not_in_creative_inventory = 1
 
-	minetest.register_node(name_opened, def_opened)
-	minetest.register_node(name_closed, def_closed)
+	core.register_node(name_opened, def_opened)
+	core.register_node(name_closed, def_closed)
 end
 
 -- Protected Wooden Trapdoor
@@ -458,12 +458,12 @@ if protector_crafts then
 
 	if mcl then
 
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:trapdoor",
 			recipe = { {"mcl_doors:trapdoor", "mcl_core:gold_ingot"} }
 		})
 	else
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:trapdoor 2",
 			recipe = {
 				{"group:wood", "default:copper_ingot", "group:wood"},
@@ -471,7 +471,7 @@ if protector_crafts then
 			}
 		})
 
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:trapdoor",
 			recipe = { {"doors:trapdoor", "default:copper_ingot"} }
 		})
@@ -500,12 +500,12 @@ if protector_crafts then
 
 	if mcl then
 
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:trapdoor_steel",
 			recipe = { {"mcl_doors:iron_trapdoor", "mcl_core:gold_ingot"} }
 		})
 	else
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:trapdoor_steel",
 			recipe = {
 				{"default:copper_ingot", "default:steel_ingot"},
@@ -513,7 +513,7 @@ if protector_crafts then
 			}
 		})
 
-		minetest.register_craft({
+		core.register_craft({
 			output = "protector:trapdoor_steel",
 			recipe = { {"doors:trapdoor_steel", "default:copper_ingot"} }
 		})
