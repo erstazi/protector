@@ -31,6 +31,7 @@ core.register_craftitem("protector:tool", {
 		-- get members on protector
 		local meta = core.get_meta(pos)
 		local members = meta:get_string("members") or ""
+		local faction = meta:get_int("faction_members")
 
 		-- get direction player is facing
 		local dir = core.dir_to_facedir( user:get_look_dir() )
@@ -137,6 +138,7 @@ core.register_craftitem("protector:tool", {
 		-- copy members across if holding sneak when using tool
 		if user:get_player_control().sneak then
 			meta:set_string("members", members)
+			meta:set_int("faction_members", faction)
 		else
 			meta:set_string("members", "")
 		end
