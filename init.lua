@@ -67,11 +67,25 @@ local function get_member_list(meta)
 	return meta:get_string("members"):split(" ")
 end
 
+-- return list of factions as a table
+
+local function get_faction_list(meta)
+
+	return meta:get_string("factions"):split(" ")
+end
+
 -- write member list table in protector meta as string
 
 local function set_member_list(meta, list)
 
 	meta:set_string("members", table.concat(list, " "))
+end
+
+-- write faction list table in protector meta as string
+
+local function set_faction_list(meta, list)
+
+	meta:set_string("factions", table.concat(list, " "))
 end
 
 -- check for owner name
@@ -81,38 +95,81 @@ local function is_owner(meta, name)
 	return name == meta:get_string("owner")
 end
 
+-- add faction name to table as member
+
+local function add_faction(meta, name)
+
+	if name ~= string.match(name, "[%w_-]+") and name ~= "*" then return end
+
+	if name:len() > 25 then return end
+
+	local list = get_faction_list(meta)
+
+	if #list >= 4 then return end
+
+	table.insert(list, name)
+
+	set_faction_list(meta, list)
+end
+
 -- check for member name
 
 local function is_member(meta, name)
 
-	if factions_available and meta:get_int("faction_members") == 1 then
+	for _, n in pairs(get_member_list(meta)) do
+
+		if n == name then return true end
+	end
+
+	if factions_available then
+
+		-- migrate
+		if meta:get_int("faction_members") == 1 then
+
+			add_faction(meta, "*")
+
+			meta:set_int("faction_members", 0)
+		end
 
 		if factions.version == nil then
 
 			-- backward compatibility
-			if factions.get_player_faction(name) ~= nil
-			and factions.get_player_faction(meta:get_string("owner")) ==
-					factions.get_player_faction(name) then
-				return true
+			local player_faction = factions.get_player_faction(name)
+
+			if player_faction ~= nil then
+
+				for _, faction in pairs(get_faction_list(meta)) do
+
+					if (faction == "*"
+					and factions.get_player_faction(
+							meta:get_string("owner")) == player_faction)
+					or faction == player_faction then return true end
+				end
 			end
 		else
-			-- is member if player and owner share at least one faction
-			local player_factions = factions.get_player_factions(name)
-			local owner = meta:get_string("owner")
+			for _, faction in pairs(get_faction_list(meta)) do
 
-			if player_factions ~= nil and player_factions ~= false then
+				if faction == "*" then
 
-				for _, f in ipairs(player_factions) do
+					-- is member if player and owner share at least one faction
+					local player_factions = factions.get_player_factions(name)
+					local owner = meta:get_string("owner")
 
-					if factions.player_is_in_faction(f, owner) then return true end
+					if player_factions ~= nil and player_factions ~= false then
+
+						for _, f in ipairs(player_factions) do
+
+							if factions.player_is_in_faction(f, owner) then
+								return true
+							end
+						end
+					end
+
+				elseif factions.player_is_in_faction(faction, name) then
+					return true
 				end
 			end
 		end
-	end
-
-	for _, n in pairs(get_member_list(meta)) do
-
-		if n == name then return true end
 	end
 
 	return false
@@ -127,9 +184,6 @@ local function add_member(meta, name)
 
 	-- Constant (20) defined by player.h
 	if name:len() > 25 then return end
-
-	-- does name already exist?
-	if is_owner(meta, name) or is_member(meta, name) then return end
 
 	local list = get_member_list(meta)
 
@@ -156,6 +210,22 @@ local function del_member(meta, name)
 	set_member_list(meta, list)
 end
 
+-- remove faction name from table
+
+local function del_faction(meta, name)
+
+	local list = get_faction_list(meta)
+
+	for i, n in pairs(list) do
+
+		if n == name then
+			table.remove(list, i) ; break
+		end
+	end
+
+	set_faction_list(meta, list)
+end
+
 -- protector interface
 
 local function protector_formspec(meta)
@@ -165,40 +235,13 @@ local function protector_formspec(meta)
 		.. default.gui_bg_img
 		.. "label[2.5,0;" .. F(S("-- Protector interface --")) .. "]"
 		.. "label[0,1;" .. F(S("PUNCH node to show protected area")) .. "]"
-		.. "label[0,2;" .. F(S("Members:")) .. "]"
+		.. "label[0,1.5;" .. F(S("Members:")) .. "]"
 		.. "button_exit[2.5,6.2;3,0.5;close_me;" .. F(S("Close")) .. "]"
 		.. "field_close_on_enter[protector_add_member;false]"
 
 	local members = get_member_list(meta)
+
 	local i = 0
-	local checkbox_faction = false
-
-	-- Display the checkbox only if the owner is member of at least 1 faction
-	if factions_available then
-
-		if factions.version == nil then
-
-			-- backward compatibility
-			if factions.get_player_faction(meta:get_string("owner")) then
-				checkbox_faction = true
-			end
-		else
-			local player_factions = factions.get_player_factions(meta:get_string("owner"))
-
-			if player_factions ~= nil and type(player_factions) == "table"
-			and #player_factions >= 1 then
-				checkbox_faction = true
-			end
-		end
-	end
-
-	if checkbox_faction then
-
-		formspec = formspec .. "checkbox[0,5;faction_members;"
-			.. F(S("Allow faction access"))
-			.. ";" .. (meta:get_int("faction_members") == 1 and
-					"true" or "false") .. "]"
-	end
 
 	for n = 1, #members do
 
@@ -206,12 +249,12 @@ local function protector_formspec(meta)
 
 			-- show username
 			formspec = formspec .. "button[" .. (i % 4 * 2)
-			.. "," .. math_floor(i / 4 + 3)
+			.. "," .. (math_floor(i / 4) + 2.5)
 			.. ";1.5,.5;protector_member;" .. F(members[n]) .. "]"
 
 			-- username remove button
 			.. "button[" .. (i % 4 * 2 + 1.25) .. ","
-			.. math_floor(i / 4 + 3)
+			.. (math_floor(i / 4) + 2.5)
 			.. ";.75,.5;protector_del_member_" .. F(members[n]) .. ";X]"
 		end
 
@@ -222,12 +265,48 @@ local function protector_formspec(meta)
 
 		-- user name entry field
 		formspec = formspec .. "field[" .. (i % 4 * 2 + 1 / 3) .. ","
-		.. (math_floor(i / 4 + 3) + 1 / 3)
+		.. (math_floor(i / 4) + 2.5 + 1 / 3)
 		.. ";1.433,.5;protector_add_member;;]"
 
 		-- username add button
 		.."button[" .. (i % 4 * 2 + 1.25) .. ","
-		.. math_floor(i / 4 + 3) .. ";.75,.5;protector_submit;+]"
+		.. (math_floor(i / 4) + 2.5) .. ";.75,.5;protector_submit;+]"
+
+	end
+
+	if factions_available then
+
+		formspec = formspec .. "label[0,4.25;"
+		.. F(S("Factions: (use * to allow any of your factions)")) .. "]"
+		.. "field_close_on_enter[protector_add_faction;false]"
+
+		local member_factions = get_faction_list(meta)
+
+		i = 0
+
+		for n = 1, #member_factions do
+
+			if i < 4 then
+
+				formspec = formspec .. "button[" .. (i % 4 * 2)
+				.. "," .. math_floor(i / 4 + 5)
+				.. ";1.5,.5;protector_faction;" .. F(member_factions[n]) .. "]"
+				.. "button[" .. (i % 4 * 2 + 1.25) .. ","
+				.. math_floor(i / 4 + 5)
+				.. ";.75,.5;protector_del_faction_" .. F(member_factions[n]) .. ";X]"
+			end
+
+			i = i + 1
+		end
+
+		if i < 4 then
+
+			formspec = formspec .. "field[" .. (i % 4 * 2 + 1 / 3) .. ","
+			.. (math_floor(i / 4 + 5) + 1 / 3)
+			.. ";1.433,.5;protector_add_faction;;]"
+			.."button[" .. (i % 4 * 2 + 1.25) .. ","
+			.. math_floor(i / 4 + 5) .. ";.75,.5;protector_submit_faction;+]"
+		end
 	end
 
 	return formspec
@@ -621,8 +700,26 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local meta = core.get_meta(pos) ; if not meta then return end
 
 	-- add faction members
-	if factions_available and fields.faction_members ~= nil then
-		meta:set_int("faction_members", fields.faction_members == "true" and 1 or 0)
+	if factions_available then
+
+		local add_faction_input = fields.protector_add_faction
+
+		if add_faction_input and add_faction_input ~= "" then
+
+			for _, i in pairs(add_faction_input:split(" ")) do
+				add_faction(meta, i)
+			end
+		end
+
+		for field, value in pairs(fields) do
+
+			if string.sub(field, 0,
+					string.len("protector_del_faction_")) == "protector_del_faction_" then
+
+				del_faction(meta, string.sub(field,
+						string.len("protector_del_faction_") + 1))
+			end
+		end
 	end
 
 	-- add member [+]
@@ -806,3 +903,4 @@ core.register_chatcommand("protector_del_member", {
 
 
 print ("[MOD] Protector Redo loaded")
+
