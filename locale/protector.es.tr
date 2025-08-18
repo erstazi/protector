@@ -33,7 +33,6 @@ Members:=Miembros:
 Close=Cerrar
 Protection located at: @1=Protección ubicada en: @1
 Members: @1.=Miembros: @1.
-Allow faction access=
 This area is not protected.=Esta área no está protegida.
 You can build here.=Puedes construir aquí.
 Overlaps into above players protected area=Se superpone en el área protegida de los jugadores anteriores
@@ -43,6 +42,7 @@ Protection Logo=Logotipo de la protección
 [MOD] Protector Redo loaded=[MOD] Protector recargado
 Spawn @1 has been protected up to a @2 block radius.=Spawn @1 ha sido protegido hasta un radio de bloque @2.
 This area is owned by @1=Esta área es propiedad de @1
+Factions: (use * to allow any of your factions)=Facciones: (utiliza * para autorizar todas tus facciones)
 
 ### hud.lua ###
 Owner: @1=Propietario: @1
