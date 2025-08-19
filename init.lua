@@ -112,6 +112,24 @@ local function add_faction(meta, name)
 	set_faction_list(meta, list)
 end
 
+-- convert old faction tick-box to "*" for all owner factions
+
+core.register_lbm({
+	label = "Protector update",
+	name = "protector:protector_update",
+	nodenames = {"protector:protect", "protector:protect2", "protector:protect_hidden"},
+	run_at_every_load = false,
+	action = function(pos, node, dtime_s)
+
+		local meta = core.get_meta(pos)
+
+		if meta:get_int("faction_members") == 1 then
+			meta:set_string("factions", "*")
+			meta:set_int("faction_members", 0)
+		end
+	end
+})
+
 -- check for member name
 
 local function is_member(meta, name)
@@ -122,14 +140,6 @@ local function is_member(meta, name)
 	end
 
 	if factions_available then
-
-		-- migrate
-		if meta:get_int("faction_members") == 1 then
-
-			add_faction(meta, "*")
-
-			meta:set_int("faction_members", 0)
-		end
 
 		if factions.version == nil then
 

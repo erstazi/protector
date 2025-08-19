@@ -31,7 +31,6 @@ core.register_craftitem("protector:tool", {
 		-- get members on protector
 		local meta = core.get_meta(pos)
 		local members = meta:get_string("members") or ""
-		local faction_members = meta:get_int("faction_members")
 		local factions = meta:get_string("factions") or ""
 
 		-- get direction player is facing
@@ -139,11 +138,12 @@ core.register_craftitem("protector:tool", {
 		-- copy members across if holding sneak when using tool
 		if user:get_player_control().sneak then
 			meta:set_string("members", members)
-			meta:set_int("faction_members", faction_members)
 			meta:set_string("factions", factions)
 		else
 			meta:set_string("members", "")
 		end
+
+		core.add_entity(pos, "protector:display")
 
 		core.chat_send_player(name,
 				S("Protector placed at @1", core.pos_to_string(pos)))
