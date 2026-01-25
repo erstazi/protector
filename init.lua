@@ -444,7 +444,10 @@ core.register_on_protection_violation(function(pos, name)
 
 			-- This delay fixes item duplication bug (thanks luk3yx)
 			core.after(0.1, function(player)
-				player:set_hp(player:get_hp() - protector_hurt)
+
+				if player:get_pos() then
+					player:set_hp(player:get_hp() - protector_hurt)
+				end
 			end, player)
 		end
 
@@ -680,7 +683,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
 	if formname ~= "protector:node" then return end
 
-	local name = player:get_player_name()
+	local name = player and player:get_player_name()
 	local pos = player_pos[name]
 
 	if not name or not pos then return end
@@ -690,8 +693,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	-- reset formspec until close button pressed
 	if (fields.close_me or fields.quit)
 	and (not add_member_input or add_member_input == "") then
-		player_pos[name] = nil
-		return
+		player_pos[name] = nil ; return
 	end
 
 	-- only owner can add names
@@ -703,8 +705,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local nod = core.get_node(pos).name
 
 	if nod ~= "protector:protect" and nod ~= "protector:protect2" then
-		player_pos[name] = nil
-		return
+		player_pos[name] = nil ; return
 	end
 
 	local meta = core.get_meta(pos) ; if not meta then return end
