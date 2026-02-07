@@ -63,7 +63,7 @@ core.register_craftitem("protector:tool", {
 		end
 
 		-- does a protector already exist ?
-		if #core.find_nodes_in_area(vector.subtract(pos, 1), vector.add(pos, 1),
+		if #core.find_nodes_in_area(pos, pos,
 				{"protector:protect", "protector:protect2",
 						"protector:protect_hidden"}) > 0 then
 
