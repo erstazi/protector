@@ -124,6 +124,7 @@ core.register_lbm({
 		local meta = core.get_meta(pos)
 
 		if meta:get_int("faction_members") == 1 then
+
 			meta:set_string("factions", "*")
 			meta:set_int("faction_members", 0)
 		end
@@ -357,8 +358,7 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 	if not digger or not pos then return false end
 
 	-- protector_bypass privileged users can override protection
-	if infolevel == 1
-	and core.check_player_privs(digger, {protection_bypass = true}) then
+	if infolevel == 1 and core.check_player_privs(digger, {protection_bypass = true}) then
 		return true
 	end
 
@@ -517,8 +517,7 @@ local function check_overlap(itemstack, placer, pointed_thing)
 	-- make sure protector doesn't overlap any other player's area
 	if not protector.can_dig(protector.radius * 2, pos, name, true, 3) then
 
-		core.chat_send_player(name,
-				S("Overlaps into above players protected area"))
+		core.chat_send_player(name, S("Overlaps into above players protected area"))
 
 		return itemstack
 	end
@@ -625,17 +624,13 @@ local def = {
 
 core.register_node("protector:protect", table.copy(def))
 
--- default recipe and alternative for MineClone2
+-- default recipe and alternative for MineClonia/Voxelibre
 
 if protector_recipe then
 
-	local item_gold = "default:gold_ingot"
-	local item_stone = "default:stone"
-
-	if core.get_modpath("mcl_core") then
-		item_gold = "mcl_core:gold_ingot"
-		item_stone = "mcl_core:stone"
-	end
+	local mcl = core.get_modpath("mcl_core")
+	local item_gold = mcl and "mcl_core:gold_ingot" or "default:gold_ingot"
+	local item_stone = mcl and "mcl_core:stone" or "default:stone"
 
 	core.register_craft({
 		output = "protector:protect",
@@ -669,13 +664,8 @@ core.register_node("protector:protect2", table.copy(def))
 
 -- recipes to switch between protectors
 
-core.register_craft({
-	output = "protector:protect", recipe = {{"protector:protect2"}}
-})
-
-core.register_craft({
-	output = "protector:protect2", recipe = {{"protector:protect"}}
-})
+core.register_craft({ output = "protector:protect", recipe = {{"protector:protect2"}} })
+core.register_craft({ output = "protector:protect2", recipe = {{"protector:protect"}} })
 
 -- check formspec buttons or when name entered
 
@@ -684,9 +674,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= "protector:node" then return end
 
 	local name = player and player:get_player_name()
-	local pos = player_pos[name]
+	local pos = name and player_pos[name]
 
-	if not name or not pos then return end
+	if not pos then return end
 
 	local add_member_input = fields.protector_add_member
 
@@ -697,9 +687,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	-- only owner can add names
-	if not protector.can_dig(1, pos, player:get_player_name(), true, 1) then
-		return
-	end
+	if not protector.can_dig(1, pos, name, true, 1) then return end
 
 	-- are we adding member to a protection node ? (csm protection)
 	local nod = core.get_node(pos).name
@@ -708,13 +696,17 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		player_pos[name] = nil ; return
 	end
 
-	local meta = core.get_meta(pos) ; if not meta then return end
+	local meta = core.get_meta(pos)
 
-	-- add faction members
+	if not meta then
+		player_pos[name] = nil ; return
+	end
+
 	if factions_available then
 
 		local add_faction_input = fields.protector_add_faction
 
+		-- add faction member [+]
 		if add_faction_input and add_faction_input ~= "" then
 
 			for _, i in pairs(add_faction_input:split(" ")) do
@@ -722,6 +714,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			end
 		end
 
+		-- remove faction member [x]
 		for field, value in pairs(fields) do
 
 			if string.sub(field, 0,
@@ -766,9 +759,7 @@ core.register_entity("protector:display", {
 		visual_size = {x = 0.67, y = 0.67},
 		textures = {"protector:display_node"},
 		glow = 10
-	},
-
-	timer = 0,
+	},  timer = 0,
 
 	on_step = function(self, dtime)
 
@@ -790,8 +781,7 @@ core.register_node("protector:display_node", {
 	walkable = false,
 	drawtype = "nodebox",
 	node_box = {
-		type = "fixed",
-		fixed = {
+		type = "fixed", fixed = {
 			{-(r+.55), -(r+.55), -(r+.55), -(r+.45), (r+.55), (r+.55)}, -- sides
 			{-(r+.55), -(r+.55), (r+.45), (r+.55), (r+.55), (r+.55)},
 			{(r+.45), -(r+.55), -(r+.55), (r+.55), (r+.55), (r+.55)},
