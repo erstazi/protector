@@ -349,7 +349,7 @@ end
 
 -- Infolevel:
 -- 0 for no info
--- 1 for "This area is owned by <owner> !" if you can't dig
+-- 1 for "This area is owned by <owner>." if you can't dig
 -- 2 for "This area is owned by <owner>.
 -- 3 for checking protector overlaps
 
@@ -394,7 +394,7 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 			-- and you aren't on the member list
 			if onlyowner or not is_member(meta, digger) then
 
-				show_msg(digger, S("This area is owned by @1", owner) .. "!")
+				show_msg(digger, S("This area is owned by @1.", owner))
 
 				return false
 			end
@@ -404,7 +404,7 @@ function protector.can_dig(r, pos, digger, onlyowner, infolevel)
 		if infolevel == 2 then
 
 			core.chat_send_player(digger,
-					S("This area is owned by @1", owner) .. ".")
+					S("This area is owned by @1.", owner))
 
 			core.chat_send_player(digger,
 					S("Protection located at: @1", core.pos_to_string(pos[n])))
@@ -437,41 +437,40 @@ core.register_on_protection_violation(function(pos, name)
 
 	local player = core.get_player_by_name(name)
 
-	if player and player:is_player() then
+	if not player or not player:is_player() then return end
 
-		-- hurt player if protection violated
-		if protector_hurt > 0 and player:get_hp() > 0 then
+	-- hurt player if protection violated
+	if protector_hurt > 0 and player:get_hp() > 0 then
 
-			-- This delay fixes item duplication bug (thanks luk3yx)
-			core.after(0.1, function(player)
+		-- This delay fixes item duplication bug (thanks luk3yx)
+		core.after(0.1, function(player)
 
-				if player:get_pos() then
-					player:set_hp(player:get_hp() - protector_hurt)
-				end
-			end, player)
+			if player:get_pos() then
+				player:set_hp(player:get_hp() - protector_hurt)
+			end
+		end, player)
+	end
+
+	-- flip player when protection violated
+	if protector_flip then
+
+		-- yaw + 180°
+		local yaw = player:get_look_horizontal() + math_pi
+
+		if yaw > 2 * math_pi then
+			yaw = yaw - 2 * math_pi
 		end
 
-		-- flip player when protection violated
-		if protector_flip then
+		player:set_look_horizontal(yaw)
 
-			-- yaw + 180°
-			local yaw = player:get_look_horizontal() + math_pi
+		-- invert pitch
+		player:set_look_vertical(-player:get_look_vertical())
 
-			if yaw > 2 * math_pi then
-				yaw = yaw - 2 * math_pi
-			end
+		-- if digging below player, move up to avoid falling through hole
+		local pla_pos = player:get_pos()
 
-			player:set_look_horizontal(yaw)
-
-			-- invert pitch
-			player:set_look_vertical(-player:get_look_vertical())
-
-			-- if digging below player, move up to avoid falling through hole
-			local pla_pos = player:get_pos()
-
-			if pos.y < pla_pos.y then
-				player:set_pos({x = pla_pos.x, y = pla_pos.y + 0.8, z = pla_pos.z})
-			end
+		if pos.y < pla_pos.y then
+			player:set_pos({x = pla_pos.x, y = pla_pos.y + 0.8, z = pla_pos.z})
 		end
 	end
 end)
@@ -484,10 +483,8 @@ local old_is_protected = core.is_protected
 
 function core.is_protected(pos, digger)
 
-	digger = digger or "" -- nil check
-
 	-- is area protected against digger?
-	if not protector.can_dig(protector.radius, pos, digger, false, 1) then
+	if not protector.can_dig(protector.radius, pos, (digger or ""), false, 1) then
 		return true
 	end
 
