@@ -522,7 +522,7 @@ local function check_overlap(itemstack, placer, pointed_thing)
 		}
 
 		if not areas:canInteractInArea(pos1, pos2, name, false) then
-			core.chat_send_player(name, S("Overlaps an existing protected area."))
+			core.chat_send_player(name, S("Overlaps an existing protected area from areas mod."))
 			return itemstack
 		end
 	end
