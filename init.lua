@@ -503,12 +503,28 @@ local function check_overlap(itemstack, placer, pointed_thing)
 
 	-- make sure protector doesn't overlap onto protected spawn area
 	if inside_spawn(pos, protector_spawn + protector.radius) then
-
-		core.chat_send_player(name,
-				S("Spawn @1 has been protected up to a @2 block radius.",
-				core.pos_to_string(statspawn), protector_spawn))
-
+		core.chat_send_player(name, S("Spawn @1 has been protected up to a @2 block radius.", core.pos_to_string(statspawn), protector_spawn))
 		return itemstack
+	end
+
+	-- make sure protector doesn't overlap an Areas protected area
+	if areas then
+		local pos1 = {
+			x = pos.x - protector.radius,
+			y = pos.y - protector.radius,
+			z = pos.z - protector.radius,
+		}
+
+		local pos2 = {
+			x = pos.x + protector.radius,
+			y = pos.y + protector.radius,
+			z = pos.z + protector.radius,
+		}
+
+		if not areas:canInteractInArea(pos1, pos2, name, false) then
+			core.chat_send_player(name, S("Overlaps an existing protected area."))
+			return itemstack
+		end
 	end
 
 	-- make sure protector doesn't overlap any other player's area
